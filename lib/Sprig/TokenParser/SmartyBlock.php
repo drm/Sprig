@@ -1,7 +1,6 @@
 <?php
 /**
- * @author Gerard van Helden <gerard@zicht.nl>
- * @copyright Zicht online <http://zicht.nl>
+ * @author Gerard van Helden <drm@melp.nl>
  */
 
 abstract class Sprig_TokenParser_SmartyBlock implements Twig_TokenParserInterface {

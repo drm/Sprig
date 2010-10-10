@@ -1,7 +1,6 @@
 <?php
 /**
- * @author Gerard van Helden <gerard@zicht.nl>
- * @copyright Zicht online <http://zicht.nl>
+ * @author Gerard van Helden <drm@melp.nl>
  */
 
 class Sprig_ExpressionParser extends Twig_ExpressionParser
