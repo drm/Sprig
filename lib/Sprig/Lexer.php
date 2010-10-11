@@ -4,8 +4,6 @@
  */
 
 class Sprig_Lexer implements Twig_LexerInterface {
-    const LINE_NO_STUB = -1; // all usages should be replaced with appropriate line numbers; temporary stub
-
     public static $regex = array(
         'name' => '[a-zA-Z_][a-zA-Z0-9_]*',
         'number' => '[0-9]+(?:\.[0-9]+)?',
@@ -19,25 +17,21 @@ class Sprig_Lexer implements Twig_LexerInterface {
     private $code;
     private $len;
     private $tokens;
+    private $line = 1;
+    private $linesScannedPtr = 0;
 
 
-    function __construct(Sprig_Environment $env = null) {
+    function __construct(Sprig_Environment $env = null) 
+    {
         if($env) {
             $this->setEnvironment($env);
         }
     }
 
 
-    public function setEnvironment(Sprig_Environment $env) {
+    public function setEnvironment(Sprig_Environment $env) 
+    {
         $this->env = $env;
-    }
-
-
-    private function isCompat($compat) {
-        if($this->env) {
-            return $this->env->isCompat($compat);
-        }
-        return true;
     }
 
 
@@ -112,7 +106,8 @@ class Sprig_Lexer implements Twig_LexerInterface {
     }
 
 
-    protected function expr($end = '}') {
+    protected function expr($end = '}') 
+    {
         while($this->ptr < $this->len) {
             $prePtr = $this->ptr;
             $this->skipWhitespace();
@@ -192,11 +187,9 @@ class Sprig_Lexer implements Twig_LexerInterface {
         return true;
     }
 
-
-    private $line = 1;
-    private $linesScannedPtr = 0;
     
-    function line() {
+    public function line() 
+    {
         if($this->linesScannedPtr < $this->ptr) {
             for( ;$this->linesScannedPtr <= $this->ptr; $this->linesScannedPtr ++) {
                 if($this->linesScannedPtr >= $this->len) {
@@ -212,7 +205,8 @@ class Sprig_Lexer implements Twig_LexerInterface {
     
 
 
-    protected function lookahead($until) {
+    protected function lookahead($until) 
+    {
         $len = strlen($until);
         $i = $this->ptr;
         while(substr($this->code, $this->ptr, $len) != $until) {
@@ -229,5 +223,14 @@ class Sprig_Lexer implements Twig_LexerInterface {
     {
         while(ctype_space($this->code{$this->ptr}))
             $this->ptr ++;
+    }
+
+
+    private function isCompat($compat) 
+    {
+        if($this->env) {
+            return $this->env->isCompat($compat);
+        }
+        return true;
     }
 }
