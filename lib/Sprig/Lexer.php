@@ -169,10 +169,6 @@ class Sprig_Lexer implements Twig_LexerInterface {
                                 $repl = 'and';
                                 $this->ptr += 2;
                                 break;
-                            case '||':
-                                $repl = 'or';
-                                $this->ptr += 2;
-                                break;
                         }
                     }
                     if($repl) {
@@ -226,7 +222,7 @@ class Sprig_Lexer implements Twig_LexerInterface {
     }
 
 
-    private function isCompat($compat) 
+    public function isCompat($compat) 
     {
         if($this->env) {
             return $this->env->isCompat($compat);

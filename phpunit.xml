@@ -1,0 +1,9 @@
+<phpunit bootstrap="bootstrap.php">
+	<testsuites>
+		<testsuite><directory>test/</directory></testsuite>
+	</testsuites>
+
+	<filter>
+		<whitelist><directory suffix=".php">./lib/Sprig</directory></whitelist>
+	</filter>
+</phpunit>
