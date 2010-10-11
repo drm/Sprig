@@ -6,9 +6,9 @@ easier to migrate from Smarty to Twig.
 
 Secondary, Twig's conformance to the Django template language made it a language
 that stands too far from PHP. PHP users are used to dollar signs before 
-variables. So that part of Twig is patched in Smiggy as well.
+variables. So that part of Twig is patched in Sprig as well.
 
-Here are the main features of Smiggy:
+Here are the main features of Sprig:
 
 - Built on top of Twig's robust engine
 - Supports variable prefixing
