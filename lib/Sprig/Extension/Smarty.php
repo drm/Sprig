@@ -17,6 +17,8 @@ class Sprig_Extension_Smarty extends Twig_Extension {
         $ret = array(
             new Sprig_TokenParser_Smarty_Foreach(),
             new Sprig_TokenParser_Smarty_Include(),
+            new Sprig_TokenParser_Smarty_Assign(),
+            new Sprig_TokenParser_Smarty_Capture(),
         );
 
         foreach($this->functions as $function) {

@@ -80,7 +80,7 @@ class Sprig_Lexer implements Twig_LexerInterface {
                     $this->ptr ++;
                     $this->tokens[]= new Twig_Token(Twig_Token::BLOCK_END_TYPE, '', $this->line());
                 } elseif($this->code[$this->ptr] == '*') {
-                    if($this->lookahead('*}')) {
+                    if($this->skipAhead('*}')) {
                         $this->ptr += 2;
                     }
                 } else {
@@ -92,7 +92,7 @@ class Sprig_Lexer implements Twig_LexerInterface {
                     $this->tokens[]= new Twig_Token(Twig_Token::VAR_END_TYPE, '', $this->line());
                 }
             } else {
-                $data .= $this->lookahead('{');
+                $data .= $this->skipAhead('{');
             }
             if($this->ptr == $prePtr || $isErr) {
                 throw new UnexpectedValueException("Unexpected input at offset $this->ptr near " . substr($this->code, $this->ptr, 10));
@@ -201,7 +201,7 @@ class Sprig_Lexer implements Twig_LexerInterface {
     
 
 
-    protected function lookahead($until) 
+    protected function skipAhead($until)
     {
         $len = strlen($until);
         $i = $this->ptr;

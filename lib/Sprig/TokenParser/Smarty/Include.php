@@ -3,7 +3,7 @@
  * @author Gerard van Helden <drm@melp.nl>
  */
 
-class Sprig_TokenParser_Smarty_Include extends Sprig_TokenParser_SmartyBlock {
+class Sprig_TokenParser_Smarty_Include extends Sprig_TokenParser_Smarty_Base {
     /**
      * Parses a token and returns a node.
      *
@@ -13,9 +13,17 @@ class Sprig_TokenParser_Smarty_Include extends Sprig_TokenParser_SmartyBlock {
      */
     public function parse(Twig_Token $token)
     {
-        $this->tagName = $token->getValue();
-        $this->parseAttributes();
-        return new Twig_Node_Include($this->attributes['file'], null, $token->getLine());
+        $attributes = $this->parseAttributes();
+        $vars = $attributes;
+        unset($vars['file']);
+        if(count($vars)) {
+            $first = current($vars);
+            $lineno = $first->getLine();
+            $variables = new Sprig_Node_Expression_ArrayMergedWithContext($vars, $lineno);
+        } else {
+            $variables = null;
+        }
+        return new Twig_Node_Include($attributes['file'], $variables, $token->getLine());
     }
 
 

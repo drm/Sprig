@@ -3,11 +3,11 @@
  * @author Gerard van Helden <drm@melp.nl>
  */
 
-class Sprig_TokenParser_Smarty_Foreach extends Sprig_TokenParser_SmartyBlock {
+class Sprig_TokenParser_Smarty_Foreach extends Sprig_TokenParser_Smarty_Base {
     public function parse(Twig_Token $token)
     {
-        $this->tagName = $token->getValue();
-        $this->parseAttributes();
+        $tagName = $token->getValue();
+        $attributes = $this->parseAttributes();
         $body = $this->parser->subparse(array($this, 'decideForFork'));
         if ($this->parser->getStream()->next()->getValue() == 'foreachelse') {
             $this->parser->getStream()->expect(Twig_Token::BLOCK_END_TYPE);
@@ -17,8 +17,9 @@ class Sprig_TokenParser_Smarty_Foreach extends Sprig_TokenParser_SmartyBlock {
         }
         $this->parser->getStream()->expect(Twig_Token::BLOCK_END_TYPE);
 
-        return new Sprig_Node_Smarty_Foreach($this->tagName, $this->attributes, $body, $else);
+        return new Sprig_Node_Smarty_Foreach($tagName, $attributes, $body, $else);
     }
+
 
     public function decideForFork($token)
     {

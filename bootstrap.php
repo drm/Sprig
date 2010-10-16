@@ -9,6 +9,9 @@ function autoload($className) {
             require_once dirname(dirname(__FILE__)) . "/$path";
             break;
         default:
+            if($className == 'Smarty' || $className = 'Config_File' || $className = 'Smarty_Compiler') {
+                require_once dirname(dirname(__FILE__)) . "/Smarty/libs/$className.class.php";
+            }
     }
 }
 

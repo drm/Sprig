@@ -3,7 +3,7 @@
  * @author Gerard van Helden <drm@melp.nl>
  */
 
-class Sprig_TokenParser_Smarty_Function extends Sprig_TokenParser_SmartyBlock {
+class Sprig_TokenParser_Smarty_Function extends Sprig_TokenParser_Smarty_Tag {
     function __construct($functionName) {
         $this->functionName = $functionName;
     }
@@ -11,9 +11,7 @@ class Sprig_TokenParser_Smarty_Function extends Sprig_TokenParser_SmartyBlock {
 
     public function parse(Twig_Token $token)
     {
-        $this->parseAttributes();
-
-        return new Sprig_Node_Smarty_Function($this->functionName, $this->attributes, null);
+        return new Sprig_Node_Smarty_Function($this->functionName, $this->parseAttributes(), null);
     }
 
     /**
