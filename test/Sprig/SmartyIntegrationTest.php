@@ -48,7 +48,9 @@ class SmartyIntegrationTest extends PHPUnit_Framework_TestCase {
             )
         );
         $this->sprig->addExtension(new Sprig_Extension_Smarty());
-
+        if(!class_exists('Smarty', true)) {
+            $this->markTestSkipped("Need Smarty class to test smarty integration!");
+        }
         $this->smarty = new Smarty();
         $this->smarty->compile_dir = $tmpDir;
         $this->smarty->template_dir = dirname(__FILE__) . "/" . self::TEMPLATE_DIR;
