@@ -136,18 +136,10 @@ class Sprig_Lexer implements Twig_LexerInterface {
                     $this->ptr ++;
                     $this->tokens[]= new Sprig_Token(Sprig_Token::VAR_TYPE, $match[0], $this->line());
                     $this->ptr += strlen($match[0]);
-
-//                    if($this->code{$this->ptr} == ':' && $this->isCompat(Sprig_Environment::COMPAT_CONVERT_MODIFIER_ARGUMENTS) && $this->tokens[count($this->tokens) -1]->test(Twig_Token::OPERATOR_TYPE, '|') ) {
-//                        $this->code{$this->ptr} = '(';
-//                        for($i = $this->ptr; $i < $this->len; $i ++) {
-//                            if($this->code{$i} == ':') {
-//                                $this->code{$i} = ',';
-//                            } elseif($this->code{$i} == '}' || $this->code{$i} == '|') {
-//                                $this->code = substr($this->code, 0, $i) . ')' . substr($this->code, $i);
-//                                break;
-//                            }
-//                        }
-//                    }
+                } elseif($this->code{$this->ptr} == '#' && preg_match('/^' . self::$regex['name'] . '\#/', substr($this->code, $this->ptr +1), $match)) {
+                    $this->ptr ++;
+                    $this->tokens[]= new Sprig_Token(Sprig_Token::CONFIG_TYPE, substr($match[0], 0, -1), $this->line());
+                    $this->ptr += strlen($match[0]);
                 } elseif(preg_match('/^' . self::$regex['name'] . '/', substr($this->code, $this->ptr), $match)) {
                     $this->tokens[]= new Twig_Token(Twig_Token::NAME_TYPE, $match[0], $this->line());
                     $this->ptr += strlen($match[0]);

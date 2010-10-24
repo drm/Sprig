@@ -3,7 +3,7 @@
  * @author Gerard van Helden <drm@melp.nl>
  */
 
-class Sprig_TokenParser_Smarty_Function extends Sprig_TokenParser_Smarty_Tag {
+abstract class Sprig_TokenParser_Smarty_Function extends Sprig_TokenParser_Smarty_Tag {
     function __construct($functionName) {
         $this->functionName = $functionName;
     }

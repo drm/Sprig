@@ -5,8 +5,8 @@
 
 class Sprig_Token extends Twig_Token {
     const VAR_TYPE = 10;
-    const PHP_TYPE = 11;
-
+    const CONFIG_TYPE = 11;
+    const PHP_TYPE = 12;
 
     static function getTypeAsString($type, $short = false)
     {

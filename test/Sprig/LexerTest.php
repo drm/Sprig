@@ -157,6 +157,10 @@ class Sprig_LexerTest extends PHPUnit_Framework_TestCase {
             array(Twig_Token::VAR_START_TYPE, Twig_Token::STRING_TYPE, Twig_Token::VAR_END_TYPE),
             '{"foo"}'
         );
+        $ret[]= array(
+            array(Twig_Token::VAR_START_TYPE, array(Sprig_Token::CONFIG_TYPE, 'foo'), Twig_Token::VAR_END_TYPE),
+            '{#foo#}'
+        );
 
         return $ret;
     }
@@ -166,9 +170,9 @@ class Sprig_LexerTest extends PHPUnit_Framework_TestCase {
     function tokenizerErrors() {
         $ret = array();
         
-        $ret[]= array('{ # ');
-        $ret[]= array('{ $var # ');
-        $ret[]= array('{block $var # ');
+        $ret[]= array('{ \ ');
+        $ret[]= array('{ $var \ ');
+        $ret[]= array('{block $var \ ');
         
         return $ret;
     }
