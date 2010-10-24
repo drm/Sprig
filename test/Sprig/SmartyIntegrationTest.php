@@ -6,6 +6,7 @@
 /**
  * @property Smarty $smarty
  * @property Sprig_Environment $sprig
+ * @property Twig_Environment $twig
  * @property array $testData
  * @property string $templateDir
  */
@@ -29,7 +30,17 @@ class SmartyIntegrationTest extends PHPUnit_Framework_TestCase {
             ),
             'var' => md5(str_repeat(chr(rand(65, 65+27)), 100))
         );
+
         $this->sprig = new Sprig_Environment(
+            new Twig_Loader_Filesystem(dirname(__FILE__) . "/" . self::TEMPLATE_DIR),
+            array(
+                'cache' => $tmpDir,
+                'debug' => true
+            )
+        );
+        $this->sprig->addExtension(new Sprig_Extension_Smarty());
+
+        $this->twig = new Twig_Environment(
             new Twig_Loader_Filesystem(dirname(__FILE__) . "/" . self::TEMPLATE_DIR),
             array(
                 'cache' => $tmpDir,
@@ -50,6 +61,20 @@ class SmartyIntegrationTest extends PHPUnit_Framework_TestCase {
     function testSmartyAndSprigRenderEquivalent($file) {
         $this->smarty->assign($this->testData);
         $this->assertOutputIsEquivalent($this->smarty->fetch($file), $this->sprig->loadTemplate($file)->render($this->testData));
+    }
+
+
+    /**
+     * @dataProvider templateFiles
+     */
+    function testSprigAndTwigRenderEquivalent ($file) {
+        if(!is_file(dirname(__FILE__) . '/' . self::TEMPLATE_DIR . '/' . "$file.twig")) {
+            $this->markTestSkipped("Template $file.twig does not exist");
+        }
+        $this->assertOutputIsEquivalent(
+            $this->sprig->loadTemplate($file)->render($this->testData),
+            $this->twig->loadTemplate("$file.twig")->render($this->testData)
+        );
     }
 
 

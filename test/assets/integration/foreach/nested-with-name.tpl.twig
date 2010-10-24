@@ -1,0 +1,10 @@
+{% for foo in foos %}
+    {{ loop.index }} of {{ loop.length }}
+
+    {% for f in foo %}
+        {{ _parent.loop.index }} of {{ _parent.loop.length }}
+        {{ loop.index }} of {{ loop.length }}
+    {% endfor %}
+
+    {{ loop.index }} of {{ loop.length }}
+{% endfor %}

@@ -1,0 +1,9 @@
+{% set test %}
+    outerstart
+        {% set test2 %}
+            inner
+        {% endset %}
+    outerend
+{% endset %}
+
+[ {{ test }} {{ test2 }} ]

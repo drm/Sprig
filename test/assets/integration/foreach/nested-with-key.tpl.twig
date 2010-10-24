@@ -1,0 +1,9 @@
+{% for outerKey, foo in foos %}
+    {{ outerKey }}
+
+    {% for innerKey, f in foo %}
+        {{ innerKey }}
+    {% endfor %}
+
+    {{ outerKey }}
+{% endfor %}
