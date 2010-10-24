@@ -18,8 +18,6 @@ class Sprig_Environment extends Twig_Environment {
     const COMPAT_CONVERT_LOGICAL_OPERATORS  = 3;
     const COMPAT_PHP_BLOCKS                 = 4;
     const COMPAT_CONVERT_MODIFIER_ARGUMENTS = 5;
-    const COMPAT_REPLACE_ISSET              = 6;
-    const COMPAT_REPLACE_EMPTY              = 6;
 
     protected $compat;
 
