@@ -35,8 +35,8 @@ class SmartyIntegrationTest extends PHPUnit_Framework_TestCase {
             ),
             'var' => str_repeat(chr(rand(65, 65+27)), 100)
         );
-
         $this->smarty = new Smarty();
+        $this->smarty->template_dir = self::TEMPLATE_DIR;
         $this->smarty->compile_dir = $tmpDir;
         $this->smarty->template_dir = dirname(__FILE__) . "/" . self::TEMPLATE_DIR;
         $this->smarty->config_load(dirname(__FILE__) . "/" . self::TEMPLATE_DIR . '/vars.conf');
@@ -80,8 +80,8 @@ class SmartyIntegrationTest extends PHPUnit_Framework_TestCase {
             $this->markTestSkipped("Template $file.twig does not exist");
         }
         $this->assertOutputIsEquivalent(
-            $this->sprig->loadTemplate($file)->render($this->testData),
-            $this->twig->loadTemplate("$file.twig")->render($this->testData)
+            $this->twig->loadTemplate("$file.twig")->render($this->testData),
+            $this->sprig->loadTemplate($file)->render($this->testData)
         );
     }
 

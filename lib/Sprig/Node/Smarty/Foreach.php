@@ -21,22 +21,22 @@ class Sprig_Node_Smarty_Foreach extends Sprig_Node_Smarty {
         ;
         $itemName = $keyName = $nameName = null;
 
-        if($this->attributes['item'] instanceof Twig_Node_Expression_Name) {
-            $itemName = $this->attributes['item']->getAttribute('name');
+        if($this->attributes['item'] instanceof Twig_Node_Expression_Constant) {
+            $itemName = $this->attributes['item']->getAttribute('value');
         } else {
             throw new Sprig_SyntaxError('item must be a literal name', $this->attributes['item']->getLine());
         }
         if($this->hasAttribute('key')) {
-            if(!$this->attributes['key'] instanceof Twig_Node_Expression_Name) {
+            if(!$this->attributes['key'] instanceof Twig_Node_Expression_Constant) {
                 throw new Sprig_SyntaxError('key must be a literal name', $this->attributes['key']->getLine());
             }
-            $keyName = $this->attributes['key']->getAttribute('name');
+            $keyName = $this->attributes['key']->getAttribute('value');
         }
         if($this->hasAttribute('name')) {
-            if(!$this->attributes['name'] instanceof Twig_Node_Expression_Name) {
+            if(!$this->attributes['name'] instanceof Twig_Node_Expression_Constant) {
                 throw new Sprig_SyntaxError('name must be a literal name', $this->attributes['name']->getLine());
             }
-            $nameName = $this->attributes['name']->getAttribute('name');
+            $nameName = $this->attributes['name']->getAttribute('value');
         }
 
         $compiler

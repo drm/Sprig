@@ -29,6 +29,12 @@ class Sprig_ExpressionParser extends Twig_ExpressionParser
             if (!$assignment) {
                 $node = $this->parsePostfixExpression($node);
             }
+        } elseif($token->getType() == Twig_Token::NAME_TYPE) {
+            $this->parser->getStream()->next();
+            $node = new Twig_Node_Expression_Constant($token->getValue(), $token->getLine());
+            if(!$assignment) {
+                $node = $this->parsePostfixExpression($node);
+            }
         } else {
             $node = parent::parsePrimaryExpression($assignment);
         }
