@@ -23,4 +23,11 @@ class Sprig_TokenParser_Smarty_Function extends Sprig_TokenParser_Smarty_Tag {
     {
         return $this->functionName;
     }
+
+
+
+    public function getNodeImpl()
+    {
+        //TODO
+    }
 }
