@@ -35,6 +35,12 @@ class Sprig_Lexer implements Twig_LexerInterface {
     }
 
 
+    /**
+     * @throws UnexpectedValueException
+     * @param  $code
+     * @param string $filename
+     * @return Twig_TokenStream
+     */
     public function tokenize($code, $filename = 'n/a')
     {
         $this->code = $code;

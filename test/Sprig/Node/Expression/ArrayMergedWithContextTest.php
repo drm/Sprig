@@ -1,17 +1,12 @@
 <?php
 
-class Sprig_Node_Expression_ArrayMergedWithContextTest extends PHPUnit_Framework_TestCase {
+require_once dirname(__FILE__) . '/../AbstractTest.php';
+
+class Sprig_Node_Expression_ArrayMergedWithContextTest extends Sprig_Node_AbstractTest  {
+    /**
+     * @covers Sprig_Node_Expression_ArrayMergedWithContext
+     */
     function testCompile() {
-        $context = array('a' => 0, 'b' => 2);
-        $compiler = new Twig_Compiler();
-        
-        $var = array(
-            'a' => new Twig_Node_Expression_Constant(1, -1), 
-            'c' => new Twig_Node_Expression_Constant('3', -1)
-        );
-        $node = new Sprig_Node_Expression_ArrayMergedWithContext($var, -1);
-        $node->compile($compiler);
-        eval('$actual = ' . $compiler->getSource() . ';');
-        $this->assertEquals(array('a' => 1, 'b' => 2, 'c' => 3), $actual);
+        $this->assertExpressionResultEquals(array('a' => 1, 'b' => 2, 'c' => 3), new Sprig_Node_Expression_ArrayMergedWithContext($this->_expr(array('a' => 1, 'c' => 3)), -1));
     }
 }

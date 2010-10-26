@@ -21,7 +21,9 @@ class Sprig_Node_Smarty_Foreach extends Sprig_Node_Smarty {
         ;
         $itemName = $keyName = $nameName = null;
 
-        if($this->attributes['item'] instanceof Twig_Node_Expression_Constant) {
+        if(!$this->hasAttribute('item')) {
+            throw new Sprig_SyntaxError('Item attribute is required', null); // TODO line number
+        } elseif($this->attributes['item'] instanceof Twig_Node_Expression_Constant) {
             $itemName = $this->attributes['item']->getAttribute('value');
         } else {
             throw new Sprig_SyntaxError('item must be a literal name', $this->attributes['item']->getLine());
