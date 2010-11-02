@@ -126,7 +126,6 @@ class Sprig_Lexer implements Twig_LexerInterface {
                             $match = $this->isMatch(self::$regex[$regexName], $matchIndex);
                             if(false !== $match) {
                                 if($tokenType == Twig_Token::OPERATOR_TYPE && array_key_exists($match, self::$operatorTokenCompat)) {
-
                                     $this->tokens[]= new Twig_Token(
                                         self::$operatorTokenCompat[$match][0], 
                                         self::$operatorTokenCompat[$match][1], 
@@ -205,76 +204,6 @@ class Sprig_Lexer implements Twig_LexerInterface {
     {
         while(ctype_space($this->code{$this->ptr}))
             $this->ptr ++;
-    }
-
-
-    protected function expr($end) 
-    {
-        while($this->ptr < $this->len) {
-            $prePtr = $this->ptr;
-            $this->skipWhitespace();
-            if(false !== $this->isMatch($end, 0, false)) {
-                break;
-            } elseif(preg_match('/^' . self::$regex['operator'] . '/s', substr($this->code, $this->ptr), $match)) {
-                if($this->isCompat(Sprig_Environment::COMPAT_CONVERT_ARROW_TO_DOT) && substr($this->code, $this->ptr, 2) == '->') {
-                    $this->tokens[]= new Twig_Token(Twig_Token::OPERATOR_TYPE, '.', $this->line());
-                    $this->ptr += 2;
-                } elseif($this->isCompat(Sprig_Environment::COMPAT_CONVERT_LOGICAL_OPERATORS) && substr($this->code, $this->ptr, 2) == '||') {
-                    $this->tokens[]= new Twig_Token(Twig_Token::NAME_TYPE, 'or', $this->line());
-                    $this->ptr += 2;
-                } else {
-                    $this->tokens[]= new Twig_Token(Twig_Token::OPERATOR_TYPE, $match[0], $this->line());
-                    $this->ptr += strlen($match[0]);
-                }
-                if(
-                        $this->isCompat(Sprig_Environment::COMPAT_DROP_MODIFIER_AT_SIGN)
-                        && $match[0] == '|'
-                        && $this->code{$this->ptr} == '@'
-                ) {
-                    $this->ptr ++;
-                }
-            } else {
-                if($this->code{$this->ptr} == '$' && preg_match('/^' . self::$regex['name'] . '/', substr($this->code, $this->ptr +1), $match)) {
-                    $this->ptr ++;
-                    $this->tokens[]= new Sprig_Token(Sprig_Token::VAR_TYPE, $match[0], $this->line());
-                    $this->ptr += strlen($match[0]);
-                } elseif($this->code{$this->ptr} == '#' && preg_match('/^' . self::$regex['name'] . '\#/', substr($this->code, $this->ptr +1), $match)) {
-                    $this->ptr ++;
-                    $this->tokens[]= new Sprig_Token(Sprig_Token::CONFIG_TYPE, substr($match[0], 0, -1), $this->line());
-                    $this->ptr += strlen($match[0]);
-                } elseif(preg_match('/^' . self::$regex['name'] . '/', substr($this->code, $this->ptr), $match)) {
-                    $this->tokens[]= new Twig_Token(Twig_Token::NAME_TYPE, $match[0], $this->line());
-                    $this->ptr += strlen($match[0]);
-                } elseif(preg_match('/^' . self::$regex['string'] . '/', substr($this->code, $this->ptr), $match)) {
-                    $value = stripcslashes(substr($match[0], 1, strlen($match[0]) - 2));
-                    $this->tokens[]= new Twig_Token(Twig_Token::STRING_TYPE, $value, $this->line());
-                    $this->ptr += strlen($match[0]);
-                } elseif(preg_match('/^' . self::$regex['number'] . '/', substr($this->code, $this->ptr), $match)) {
-                    $this->tokens[]= new Twig_Token(Twig_Token::NUMBER_TYPE, $match[0], $this->line());
-                    $this->ptr += strlen($match[0]);
-                } elseif($this->isCompat(Sprig_Environment::COMPAT_CONVERT_LOGICAL_OPERATORS)) {
-                    $repl = null;
-                    if($this->code{$this->ptr} == '!') {
-                        $repl = 'not';
-                        $this->ptr ++;
-                    } else {
-                        switch(substr($this->code, $this->ptr, 2)) {
-                            case '&&':
-                                $repl = 'and';
-                                $this->ptr += 2;
-                                break;
-                        }
-                    }
-                    if($repl) {
-                        $this->tokens[]= new Twig_Token(Twig_Token::NAME_TYPE, $repl, $this->line());
-                    }
-                }
-            }
-            if($this->ptr == $prePtr) {
-                return false;
-            }
-        }
-        return true;
     }
 
     
