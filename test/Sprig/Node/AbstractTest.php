@@ -3,7 +3,7 @@
  * @author Gerard van Helden <drm@melp.nl>
  */
 
-class Sprig_Node_AbstractTest extends PHPUnit_Framework_TestCase {
+abstract class Sprig_Node_AbstractTest extends PHPUnit_Framework_TestCase {
     function setUp() {
         $this->context = array('a' => 0, 'b' => 2);
         $this->compiler = new Twig_Compiler();
