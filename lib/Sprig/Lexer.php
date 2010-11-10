@@ -4,7 +4,7 @@
  */
 
 class Sprig_Lexer implements Twig_LexerInterface {
-    public static $regex = array(
+    public $regex = array(
         'name'          => '[a-zA-Z_][a-zA-Z0-9_]*',
         'number'        => '[0-9]+(?:\.[0-9]+)?',
         'string'        => '(?:"([^"\\\\]*(?:\\\\.[^"\\\\]*)*)"|\'([^\'\\\\]*(?:\\\\.[^\'\\\\]*)*)\')',
@@ -20,7 +20,7 @@ class Sprig_Lexer implements Twig_LexerInterface {
         'config'        => '#([a-zA-Z_][a-zA-Z0-9_]*)#'
     );
     
-    public static $operatorTokenCompat = array(
+    public $operatorTokenCompat = array(
         '&&' => array(Twig_Token::NAME_TYPE,    'and'),
         '||' => array(Twig_Token::NAME_TYPE,    'or'),
         '!'  => array(Twig_Token::NAME_TYPE,    'not'),
@@ -28,7 +28,7 @@ class Sprig_Lexer implements Twig_LexerInterface {
         '->' => array(Twig_Token::OPERATOR_TYPE, '.')
     );
     
-    public static $genericTokenMap = array(
+    public $genericTokenMap = array(
         'var'           => array(Sprig_Token::VAR_TYPE, 1),
         'config'        => array(Sprig_Token::CONFIG_TYPE, 1),
         'name'          => array(Twig_Token::NAME_TYPE, 0),
@@ -89,9 +89,9 @@ class Sprig_Lexer implements Twig_LexerInterface {
                 }
             } else {
                 $data = $this->skipAhead(array(
-                    self::$regex['comment_start'],
-                    self::$regex['block_start'],
-                    self::$regex['var_start']
+                    $this->regex['comment_start'],
+                    $this->regex['block_start'],
+                    $this->regex['var_start']
                 ));
                 
                 if($data) {
@@ -99,18 +99,18 @@ class Sprig_Lexer implements Twig_LexerInterface {
                     $data = '';
                 }
                 
-                if(false !== $this->isMatch(self::$regex['comment_start'])) {
-                    $this->skipAhead(self::$regex['comment_end'], true);
+                if(false !== $this->isMatch($this->regex['comment_start'])) {
+                    $this->skipAhead($this->regex['comment_end'], true);
                 } elseif(
-                    false !== ($start = $this->isMatch(array(self::$regex['block_start'], self::$regex['var_start']), 0, false))
+                    false !== ($start = $this->isMatch(array($this->regex['block_start'], $this->regex['var_start']), 0, false))
                 ) {
-                    if($this->isMatch(self::$regex['block_start'])) {
+                    if($this->isMatch($this->regex['block_start'])) {
                         $this->tokens[] = new Twig_Token(Twig_Token::BLOCK_START_TYPE, '', $this->line());
-                        if($this->isMatch('\/') && $name = $this->isMatch(self::$regex['name'])) {
+                        if($this->isMatch('\/') && $name = $this->isMatch($this->regex['name'])) {
                             $this->tokens[]= new Twig_Token(Twig_Token::NAME_TYPE, 'end' . $name, $this->line());
                         }
                         $end = 'block_end';
-                    } elseif($this->isMatch(self::$regex['var_start'])) {
+                    } elseif($this->isMatch($this->regex['var_start'])) {
                         $this->tokens[] = new Twig_Token(Twig_Token::VAR_START_TYPE, '', $this->line());
                         $end = 'var_end';
                     } else {
@@ -121,14 +121,14 @@ class Sprig_Lexer implements Twig_LexerInterface {
                         
                         $match = false;
                         $this->skipWhitespace();
-                        foreach(self::$genericTokenMap as $regexName => $type) {
+                        foreach($this->genericTokenMap as $regexName => $type) {
                             list($tokenType, $matchIndex) = $type;
-                            $match = $this->isMatch(self::$regex[$regexName], $matchIndex);
+                            $match = $this->isMatch($this->regex[$regexName], $matchIndex);
                             if(false !== $match) {
-                                if($tokenType == Twig_Token::OPERATOR_TYPE && array_key_exists($match, self::$operatorTokenCompat)) {
+                                if($tokenType == Twig_Token::OPERATOR_TYPE && array_key_exists($match, $this->operatorTokenCompat)) {
                                     $this->tokens[]= new Twig_Token(
-                                        self::$operatorTokenCompat[$match][0], 
-                                        self::$operatorTokenCompat[$match][1], 
+                                        $this->operatorTokenCompat[$match][0], 
+                                        $this->operatorTokenCompat[$match][1], 
                                         $this->line()
                                     );
                                 } else {
@@ -142,7 +142,7 @@ class Sprig_Lexer implements Twig_LexerInterface {
                             }
                         }
                         if(false === $match) {
-                            if($match = $this->isMatch(self::$regex[$end])) {
+                            if($match = $this->isMatch($this->regex[$end])) {
                                 switch($end) {
                                     case 'var_end':
                                         $this->tokens[]= new Twig_Token(Twig_Token::VAR_END_TYPE, $match, $this->line());
@@ -214,12 +214,26 @@ class Sprig_Lexer implements Twig_LexerInterface {
                 if($this->linesScannedPtr >= $this->len) {
                     break;
                 }
+                
                 if($this->code{$this->linesScannedPtr} == "\n") {
                     $this->line ++;
                 }
             }
         }
         return $this->line;
+    }
+    
+    
+    public function setDelimiters($type, $start, $end) 
+    {
+        $startName = $type . '_start';
+        $endName = $type . '_end';
+        if(array_key_exists($startName, $this->regex)) {
+            $this->regex[$startName] = preg_quote($start, '/');
+        } 
+        if(array_key_exists($startName, $this->regex)) {
+            $this->regex[$endName] = preg_quote($end, '/');
+        }
     }
     
 

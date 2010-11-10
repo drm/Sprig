@@ -59,7 +59,17 @@ class SmartyIntegrationTest extends PHPUnit_Framework_TestCase {
                 'debug' => true
             )
         );
-
+        
+        $this->compatSprig = new Sprig_Environment(
+            new Twig_Loader_Filesystem(dirname(__FILE__) . "/" . self::TEMPLATE_DIR),
+            array(
+                'cache' => $tmpDir,
+                'debug' => true
+            )
+        );
+        $this->compatSprig->getLexer()->setDelimiters('comment', '{#', '#}');
+        $this->compatSprig->getLexer()->setDelimiters('var', '{{', '}}');
+        $this->compatSprig->getLexer()->setDelimiters('block', '{%', '%}');
     }
 
 
@@ -82,6 +92,19 @@ class SmartyIntegrationTest extends PHPUnit_Framework_TestCase {
         $this->assertOutputIsEquivalent(
             $this->twig->loadTemplate("$file.twig")->render($this->testData),
             $this->sprig->loadTemplate($file)->render($this->testData)
+        );
+    }
+
+    /**
+     * @dataProvider templateFiles
+     */
+    function testTwigAndCompatSprigRenderEquivalent ($file) {
+        if(!is_file(dirname(__FILE__) . '/' . self::TEMPLATE_DIR . '/' . "$file.twig")) {
+            $this->markTestSkipped("Template $file.twig does not exist");
+        }
+        $this->assertOutputIsEquivalent(
+            $this->twig->loadTemplate("$file.twig")->render($this->testData),
+            $this->compatSprig->loadTemplate("$file.twig")->render($this->testData)
         );
     }
 
