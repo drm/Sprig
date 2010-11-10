@@ -1,5 +1,5 @@
 <?php
 
 
-class Sprig_SyntaxError extends Twig_SyntaxError {
+class Sprig_SyntaxError extends Twig_Error_Syntax {
 }

@@ -9,7 +9,7 @@ class Sprig_TokenParser_Smarty_CaptureTest extends Sprig_TokenParser_AbstractTes
     }
 
     /**
-     * @expectedException Twig_SyntaxError
+     * @expectedException Twig_Error_Syntax
      */
     function testUnclosedBlockThrowsException() {
         $this->assertNodeType('Sprig_Node_Smarty_Capture', '{capture assign=piet}');

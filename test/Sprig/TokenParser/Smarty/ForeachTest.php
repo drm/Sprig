@@ -10,7 +10,7 @@ class Sprig_TokenParser_Smarty_ForeachTest extends Sprig_TokenParser_AbstractTes
     }
 
     /**
-     * @expectedException Twig_SyntaxError
+     * @expectedException Twig_Error_Syntax
      */
     function testUnclosedBlockThrowsException() {
         $this->assertNodeType('', '{foreach from=x item=y}');

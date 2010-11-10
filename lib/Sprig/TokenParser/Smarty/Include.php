@@ -23,7 +23,7 @@ class Sprig_TokenParser_Smarty_Include extends Sprig_TokenParser_Smarty_Base {
         } else {
             $variables = null;
         }
-        return new Twig_Node_Include($attributes['file'], $variables, $token->getLine());
+        return new Twig_Node_Include($attributes['file'], $variables, false, $token->getLine());
     }
 
 
