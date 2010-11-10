@@ -23,6 +23,8 @@ class SmartyIntegrationTest extends PHPUnit_Framework_TestCase {
         } else {
             $tmpDir = sys_get_temp_dir();
         }
+        
+
 
         $this->testData = array(
             'foo' => array(
@@ -43,8 +45,10 @@ class SmartyIntegrationTest extends PHPUnit_Framework_TestCase {
 
         $this->testData['_config'] = $this->smarty->_config[0]['vars'];
 
+        $loader = new Twig_Loader_Filesystem(dirname(__FILE__) . "/" . self::TEMPLATE_DIR);
+        $loader->setForceLoad(true);
         $this->sprig = new Sprig_Environment(
-            new Twig_Loader_Filesystem(dirname(__FILE__) . "/" . self::TEMPLATE_DIR),
+            $loader,
             array(
                 'cache' => $tmpDir,
                 'debug' => true
@@ -53,7 +57,7 @@ class SmartyIntegrationTest extends PHPUnit_Framework_TestCase {
         $this->sprig->addExtension(new Sprig_Extension_Smarty());
 
         $this->twig = new Twig_Environment(
-            new Twig_Loader_Filesystem(dirname(__FILE__) . "/" . self::TEMPLATE_DIR),
+            $loader,
             array(
                 'cache' => $tmpDir,
                 'debug' => true
@@ -61,7 +65,7 @@ class SmartyIntegrationTest extends PHPUnit_Framework_TestCase {
         );
         
         $this->compatSprig = new Sprig_Environment(
-            new Twig_Loader_Filesystem(dirname(__FILE__) . "/" . self::TEMPLATE_DIR),
+            $loader,
             array(
                 'cache' => $tmpDir,
                 'debug' => true

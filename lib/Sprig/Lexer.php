@@ -33,7 +33,7 @@ class Sprig_Lexer implements Twig_LexerInterface {
         'config'        => array(Sprig_Token::CONFIG_TYPE, 1),
         'name'          => array(Twig_Token::NAME_TYPE, 0),
         'number'        => array(Twig_Token::NUMBER_TYPE, 0),
-        'string'        => array(Twig_Token::STRING_TYPE, 0),
+        'string'        => array(Twig_Token::STRING_TYPE, 1),
         'operator'      => array(Twig_Token::OPERATOR_TYPE, 0)
     );
 
