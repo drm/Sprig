@@ -116,6 +116,7 @@ class Sprig_Lexer implements Twig_LexerInterface {
                     } else {
                         throw new LogicException("This should be unreachable code!");
                     }
+                    
                     while(!$isErr) {
                         $prePtr2 = $this->ptr;
                         
@@ -126,16 +127,18 @@ class Sprig_Lexer implements Twig_LexerInterface {
                             $match = $this->isMatch($this->regex[$regexName], $matchIndex);
                             if(false !== $match) {
                                 if($tokenType == Twig_Token::OPERATOR_TYPE && array_key_exists($match, $this->operatorTokenCompat)) {
+                                    // handle sugar for operator compatibility
                                     $this->tokens[]= new Twig_Token(
                                         $this->operatorTokenCompat[$match][0], 
                                         $this->operatorTokenCompat[$match][1], 
                                         $this->line()
                                     );
+                                /*} elseif($tokenType == Twig_Token::STRING_TYPE) {
+                                    // handle sugar for complex string type
+                                    $this->tokenizeComplexString($match);
+                                    */
                                 } else {
                                     $this->tokens[]= new Twig_Token($tokenType, $match, $this->line());
-                                }
-                                if($tokenType == Twig_Token::VAR_END_TYPE || $tokenType == Twig_Token::BLOCK_END_TYPE) {
-                                    break 2;
                                 }
                                 
                                 break;
@@ -174,6 +177,27 @@ class Sprig_Lexer implements Twig_LexerInterface {
         }
         $this->tokens[]= new Twig_Token(Twig_Token::EOF_TYPE, '', $this->line());
         return new Twig_TokenStream($this->tokens, $filename);
+    }
+    
+    
+    public function tokenizeComplexString($stringValue) {
+        $strlen = strlen($stringValue);
+        $state = 'data';
+        $data = '';
+        for($i = 0; $i < $strlen; $i ++) {
+            if($stringValue{$i} == "`") {
+                if($state == 'data') {
+                    $this->tokens[]= new Twig_Token(Twig_Token::STRING_TYPE, $data, $this->line());
+                    $state = 'expression';
+                } else {
+                    
+                    $state = 'data';
+                }
+                $data = '';
+            } else {
+                $data .= $stringValue{$i};
+            }
+        }
     }
     
     
