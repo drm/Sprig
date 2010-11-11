@@ -31,11 +31,11 @@ class SmartyIntegrationTest extends PHPUnit_Framework_TestCase {
                 'bar' => 'baz'
             ),
             'foos' => array(
-                array('bar1' =>  str_repeat(chr(rand(65, 65+27)), 100)),
-                array('bar2' =>  str_repeat(chr(rand(65, 65+27)), 100)),
-                array('bar3' =>  str_repeat(chr(rand(65, 65+27)), 100))
+                array('bar1' => 'baz1'),
+                array('bar2' => 'baz2'),
+                array('bar3' => 'baz3')
             ),
-            'var' => str_repeat(chr(rand(65, 65+27)), 100)
+            'var' => 'floobiedoobiedoo'
         );
         $this->smarty = new Smarty();
         $this->smarty->template_dir = self::TEMPLATE_DIR;

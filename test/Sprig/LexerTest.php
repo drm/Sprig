@@ -13,8 +13,7 @@ class Sprig_LexerTest extends PHPUnit_Framework_TestCase {
     function setUp() {
         $this->lexer = new Sprig_Lexer();
     }
-
-
+    
     /**
      * @dataProvider tokenSequences
      */
@@ -156,6 +155,13 @@ class Sprig_LexerTest extends PHPUnit_Framework_TestCase {
         $ret[]= array(
             array(Twig_Token::VAR_START_TYPE, Twig_Token::STRING_TYPE, Twig_Token::VAR_END_TYPE),
             '{"foo"}'
+        );
+        $ret[]= array(
+            array(Twig_Token::VAR_START_TYPE, array(Twig_Token::STRING_TYPE, "foo"), 
+                array(Twig_Token::OPERATOR_TYPE, "~"), array(Sprig_Token::VAR_TYPE, "var"), 
+                array(Twig_Token::OPERATOR_TYPE, "~"), array(Twig_Token::STRING_TYPE, "foo"),
+                Twig_Token::VAR_END_TYPE),
+            '{"foo`$var`foo"}'
         );
         $ret[]= array(
             array(Twig_Token::VAR_START_TYPE, array(Sprig_Token::CONFIG_TYPE, 'foo'), Twig_Token::VAR_END_TYPE),
