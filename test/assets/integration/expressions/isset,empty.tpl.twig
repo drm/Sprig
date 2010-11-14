@@ -5,3 +5,11 @@
 {% if foos.bar1 is isset %}foos.bar1 is set{% endif %}
 
 {% if foos.bar4 is empty %}foos.bar4 is empty{% endif %}
+
+{% if foo is not isset %}foo is not set{% else %}foo is set{% endif %}
+
+{% if bar is not empty %}bar is not empty{% else %}bar is empty{% endif %}
+
+{% if foos.bar1 is not isset %}foos.bar1 is not set{% endif %}
+
+{% if foos.bar4 is not empty %}foos.bar4 is not empty{% endif %}
