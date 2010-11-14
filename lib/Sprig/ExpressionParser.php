@@ -58,4 +58,49 @@ class Sprig_ExpressionParser extends Twig_ExpressionParser
 
         return $node;
     }
+    
+    
+    public function parseFilterExpressionRaw()
+    {
+        $filters = array();
+        while (true) {
+            $token = $this->parser->getStream()->expect(Twig_Token::NAME_TYPE);
+
+            $filters[] = new Twig_Node_Expression_Constant($token->getValue(), $token->getLine());
+            if (!$this->parser->getStream()->test(Twig_Token::OPERATOR_TYPE, array(':', '('))) {
+                $filters[] = new Twig_Node();
+            } else {
+                $filters[] = $this->parseFilterArguments();
+            }
+
+            if (!$this->parser->getStream()->test(Twig_Token::OPERATOR_TYPE, '|')) {
+                break;
+            }
+
+            $this->parser->getStream()->next();
+        }
+
+        return new Twig_Node($filters);
+    }
+    
+    
+    
+    public function parseFilterArguments() {
+        $stream = $this->parser->getStream();
+        
+        if($stream->test(Twig_Token::OPERATOR_TYPE, '(')) {
+            $ret = parent::parseArguments();
+        } else {
+            $stream->expect(Twig_Token::OPERATOR_TYPE, ':');
+            $args = array();
+            do {
+                if(count($args)) {
+                    $stream->expect(Twig_Token::OPERATOR_TYPE, ':');
+                }
+                $args[]= $this->parseExpression();
+            } while($stream->test(Twig_Token::OPERATOR_TYPE, ':'));
+            $ret = new Twig_Node($args);
+        }
+        return $ret;
+    }
 }

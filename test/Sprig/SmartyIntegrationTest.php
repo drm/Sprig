@@ -2,30 +2,21 @@
 /**
  * @author Gerard van Helden <drm@melp.nl>
  */
-
-/**
- * @property Smarty $smarty
- * @property Sprig_Environment $sprig
- * @property Twig_Environment $twig
- * @property array $testData
- * @property string $templateDir
- */
-
-class SmartyIntegrationTest extends PHPUnit_Framework_TestCase {
-    const TEMPLATE_DIR = '../assets/integration';
-    function setUp() {
-        if(!class_exists('Smarty', true)) {
-            $this->markTestSkipped("Need Smarty class to test smarty integration!");
-        }
-
+ 
+abstract class BaseIntegrationTest extends PHPUnit_Framework_TestCase 
+{
+    protected $tmpDir;
+    protected $templateDir = '../assets/integration';
+    protected $testData;
+    
+    function setUp()
+    {
         if(is_writable(dirname(__FILE__) . '/../assets/tmp')) {
-            $tmpDir = dirname(__FILE__) . '/../assets/tmp';
+            $this->tmpDir = dirname(__FILE__) . '/../assets/tmp';
         } else {
-            $tmpDir = sys_get_temp_dir();
+            $this->tmpDir = sys_get_temp_dir();
         }
         
-
-
         $this->testData = array(
             'foo' => array(
                 'bar' => 'baz'
@@ -37,45 +28,66 @@ class SmartyIntegrationTest extends PHPUnit_Framework_TestCase {
             ),
             'var' => 'floobiedoobiedoo'
         );
-        $this->smarty = new Smarty();
-        $this->smarty->template_dir = self::TEMPLATE_DIR;
-        $this->smarty->compile_dir = $tmpDir;
-        $this->smarty->template_dir = dirname(__FILE__) . "/" . self::TEMPLATE_DIR;
-        $this->smarty->config_load(dirname(__FILE__) . "/" . self::TEMPLATE_DIR . '/vars.conf');
+        $this->templateDir = dirname(__FILE__) . '/' . $this->templateDir;
 
-        $this->testData['_config'] = $this->smarty->_config[0]['vars'];
-
-        $loader = new Twig_Loader_Filesystem(dirname(__FILE__) . "/" . self::TEMPLATE_DIR);
+        $options = array(
+            'cache' => $this->tmpDir,
+            'debug' => true
+        );
+        $loader = new Twig_Loader_Filesystem(realpath($this->templateDir));
         $loader->setForceLoad(true);
-        $this->sprig = new Sprig_Environment(
-            $loader,
-            array(
-                'cache' => $tmpDir,
-                'debug' => true
-            )
-        );
-        $this->sprig->addExtension(new Sprig_Extension_Smarty());
-        $this->sprig->addExtension(new Sprig_Extension_StrictTests());
-
-        $this->twig = new Twig_Environment(
-            $loader,
-            array(
-                'cache' => $tmpDir,
-                'debug' => true
-            )
-        );
-        $this->twig->addExtension(new Sprig_Extension_StrictTests());
         
-        $this->compatSprig = new Sprig_Environment(
-            $loader,
-            array(
-                'cache' => $tmpDir,
-                'debug' => true
-            )
-        );
-        $this->compatSprig->getLexer()->setDelimiters('comment', '{#', '#}');
-        $this->compatSprig->getLexer()->setDelimiters('var', '{{', '}}');
-        $this->compatSprig->getLexer()->setDelimiters('block', '{%', '%}');
+        $this->engines = array();
+        $this->engines['smarty'] = new Smarty();
+        $this->engines['smarty']->plugins_dir[]= dirname(__FILE__) . '/../assets/plugins/';
+        $this->engines['smarty']->compile_dir = $this->tmpDir;
+        $this->engines['smarty']->template_dir = $this->templateDir;
+        $this->engines['smarty']->config_load($this->templateDir . '/vars.conf');
+        
+        $pluginLoader = new Sprig_Extension_Smarty_PluginLoader();
+        $pluginLoader->addPluginDir(dirname(__FILE__) . '/../assets/plugins/');
+        
+        $this->engines['sprig'] = new Sprig_Environment(clone $loader, $options);
+        $this->engines['sprig']->addExtension(new Sprig_Extension_StrictTests());
+        $this->engines['sprig']->addExtension(new Sprig_Extension_Smarty());
+        $this->engines['sprig']->addExtension($pluginLoader);
+
+        $this->engines['twig'] = new Twig_Environment(clone $loader, $options);
+        $this->engines['twig']->addExtension(new Sprig_Extension_StrictTests());
+        $this->engines['twig']->addExtension($pluginLoader);
+        
+        $this->engines['sprig_compat'] = new Sprig_Environment(clone $loader, $options);
+        $this->engines['sprig_compat']->getLexer()->setDelimiters('comment', '{#', '#}');
+        $this->engines['sprig_compat']->getLexer()->setDelimiters('var', '{{', '}}');
+        $this->engines['sprig_compat']->getLexer()->setDelimiters('block', '{%', '%}');
+        $this->engines['sprig_compat']->addExtension($pluginLoader);
+        
+        $this->testData['_config'] = $this->engines['smarty']->_config[0]['vars'];
+    }
+    
+    
+    
+    function templateFiles() {
+        $files = new RegexIterator(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(dirname(__FILE__) . "/" . $this->templateDir), RecursiveIteratorIterator::LEAVES_ONLY), '/\.tpl$/');
+        $ret = array_values(array_map(create_function('$f', 'return array(preg_replace(\'~.*/assets/integration/~\', \'\', (string)$f));'), iterator_to_array($files)));
+        return $ret;
+    }
+} 
+
+/**
+ * @property Smarty $smarty
+ * @property Sprig_Environment $sprig
+ * @property Twig_Environment $twig
+ * @property array $testData
+ * @property string $templateDir
+ */
+
+class SmartyIntegrationTest extends BaseIntegrationTest {
+    function setUp() {
+        parent::setUp();
+        if(!class_exists('Smarty', true)) {
+            $this->markTestSkipped("Need Smarty class to test smarty integration!");
+        }
     }
 
 
@@ -83,8 +95,8 @@ class SmartyIntegrationTest extends PHPUnit_Framework_TestCase {
      * @dataProvider templateFiles
      */
     function testSmartyAndSprigRenderEquivalent($file) {
-        $this->smarty->assign($this->testData);
-        $this->assertOutputIsEquivalent($this->smarty->fetch($file), $this->sprig->loadTemplate($file)->render($this->testData));
+        $this->engines['smarty']->assign($this->testData);
+        $this->assertOutputIsEquivalent($this->engines['smarty']->fetch($file), $this->engines['sprig']->loadTemplate($file)->render($this->testData));
     }
 
 
@@ -92,12 +104,12 @@ class SmartyIntegrationTest extends PHPUnit_Framework_TestCase {
      * @dataProvider templateFiles
      */
     function testSprigAndTwigRenderEquivalent ($file) {
-        if(!is_file(dirname(__FILE__) . '/' . self::TEMPLATE_DIR . '/' . "$file.twig")) {
+        if(!is_file($this->templateDir . '/' . "$file.twig")) {
             $this->markTestSkipped("Template $file.twig does not exist");
         }
         $this->assertOutputIsEquivalent(
-            $this->twig->loadTemplate("$file.twig")->render($this->testData),
-            $this->sprig->loadTemplate($file)->render($this->testData)
+            $this->engines['twig']->loadTemplate("$file.twig")->render($this->testData),
+            $this->engines['sprig']->loadTemplate($file)->render($this->testData)
         );
     }
 
@@ -105,12 +117,12 @@ class SmartyIntegrationTest extends PHPUnit_Framework_TestCase {
      * @dataProvider templateFiles
      */
     function testTwigAndCompatSprigRenderEquivalent ($file) {
-        if(!is_file(dirname(__FILE__) . '/' . self::TEMPLATE_DIR . '/' . "$file.twig")) {
+        if(!is_file($this->templateDir . '/' . "$file.twig")) {
             $this->markTestSkipped("Template $file.twig does not exist");
         }
         $this->assertOutputIsEquivalent(
-            $this->twig->loadTemplate("$file.twig")->render($this->testData),
-            $this->compatSprig->loadTemplate("$file.twig")->render($this->testData)
+            $this->engines['twig']->loadTemplate("$file.twig")->render($this->testData),
+            $this->engines['sprig_compat']->loadTemplate("$file.twig")->render($this->testData)
         );
     }
 
@@ -118,12 +130,4 @@ class SmartyIntegrationTest extends PHPUnit_Framework_TestCase {
     function assertOutputIsEquivalent($smartyOutput, $sprigOutput) {
         $this->assertEquals(trim(preg_replace('/\s+/', ' ', $smartyOutput)), trim(preg_replace('/\s+/', ' ', $sprigOutput)));
     }
-    
-
-    function templateFiles() {
-        $files = new RegexIterator(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(dirname(__FILE__) . "/" . self::TEMPLATE_DIR), RecursiveIteratorIterator::LEAVES_ONLY), '/\.tpl$/');
-        $ret = array_values(array_map(create_function('$f', 'return array(preg_replace(\'~.*/assets/integration/~\', \'\', (string)$f));'), iterator_to_array($files)));
-        return $ret;
-    }
-    
 }
