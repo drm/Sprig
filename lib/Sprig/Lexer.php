@@ -157,7 +157,8 @@ class Sprig_Lexer implements Twig_LexerInterface {
     }
     
     
-    public function tokenizeExpression($code = null) {
+    public function tokenizeExpression($code = null) 
+    {
         if(!is_null($code)) {
             $this->code = $code;
             $this->ptr = 0;
@@ -188,7 +189,8 @@ class Sprig_Lexer implements Twig_LexerInterface {
 
     
     
-    public function tokenizeComplexString($stringValue, $code = null) {
+    public function tokenizeComplexString($stringValue, $code = null) 
+    {
         if(!is_null($code)) {
             $this->code = $code;
             $this->ptr = 0;

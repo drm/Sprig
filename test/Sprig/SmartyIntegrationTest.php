@@ -55,6 +55,7 @@ class SmartyIntegrationTest extends PHPUnit_Framework_TestCase {
             )
         );
         $this->sprig->addExtension(new Sprig_Extension_Smarty());
+        $this->sprig->addExtension(new Sprig_Extension_StrictTests());
 
         $this->twig = new Twig_Environment(
             $loader,
@@ -63,6 +64,7 @@ class SmartyIntegrationTest extends PHPUnit_Framework_TestCase {
                 'debug' => true
             )
         );
+        $this->twig->addExtension(new Sprig_Extension_StrictTests());
         
         $this->compatSprig = new Sprig_Environment(
             $loader,
