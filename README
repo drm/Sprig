@@ -1,23 +1,20 @@
-Sprig is the working title for a set of extensions to Twig, to make
-Twig behave like Smarty.
+Sprig is a syntax compatibility layer for the Twig template engine.
 
-The primary goal of this project is to make it easier to migrate 
-from Smarty to Twig, in projects that are currently using Smarty.
+The primary goal of this project is to be a drop-in replacement for
+Smarty whilst gaining all the advantages that Twig has to offer.
 
 Here are the main features of Sprig:
 
 - Built on top of Twig's robust engine
-- Supports variable prefixing
-- Supports Smarty style syntax with {plugin param=value}
+- Supports variable prefixing, e.g. $var
+- Supports Smarty style syntax with {plugin param=$value}
 - Supports Smarty style modifier parameters {$var|name:"Argument"}
 - Supports all Smarty native tags (foreach, section, include, assign, 
   capture, etc)
 
-Currently this project is under heavy development and should not yet be
-used except for testing the project itself.
-
-Please contribute to this project by providing unit tests for wishlist 
-features or bugs.
+Currently this project is under heavy development.Please contribute 
+to this project by providing issue reports, usage documentation 
+and/or unit tests for features or bugs. 
 
 Keep up to date by following the changes on the Sprig wiki: 
 http://github.com/drm/Sprig/wiki
