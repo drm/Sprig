@@ -35,7 +35,7 @@ class Sprig_ExpressionParser extends Twig_ExpressionParser
             // test for a function call. Assume the function is a filter.
             // TODO implement a separate node for this. (or visitor?)
             if($this->parser->getStream()->test(Twig_Token::OPERATOR_TYPE, '(')) {
-                $arguments = $this->parseArguments($node);
+                $arguments = $this->parseArguments();
                 if(count($arguments) > 0) {
                     $firstArg = $arguments->getNode(0);
                     $arguments->removeNode(0);

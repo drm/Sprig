@@ -75,6 +75,7 @@ class Sprig_Lexer implements Twig_LexerInterface {
         $this->tokens = array();
 
         $isErr = false;
+        $data = null;
 
         while($this->ptr < $this->len) {
             // sanity check
