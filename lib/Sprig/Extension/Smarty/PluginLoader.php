@@ -28,7 +28,12 @@ class Sprig_Extension_Smarty_PluginLoader extends Twig_Extension {
             $ret[$pluginName] = new Sprig_Extension_Smarty_PluginLoader_FunctionTokenParser($pluginName);
             $ret[$pluginName]->setPluginFile($file);
         }
-        
+        foreach($this->getPluginFileIterator('block') as $file) {
+            $pluginName = basename($this->getPluginName($file, 'block'));
+            $ret[$pluginName] = new Sprig_Extension_Smarty_PluginLoader_BlockTokenParser($pluginName);
+            $ret[$pluginName]->setPluginFile($file);
+        }
+
         return $ret;
     }
 

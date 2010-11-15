@@ -3,7 +3,8 @@
  * @author Gerard van Helden <drm@melp.nl>
  */
 
-class Sprig_TokenParser_Smarty_Capture extends Sprig_TokenParser_Smarty_Block {
+class Sprig_TokenParser_Smarty_Capture extends Sprig_TokenParser_Smarty_Block
+{
     function getNodeImpl()
     {
         return 'Sprig_Node_Smarty_Capture';
@@ -18,8 +19,4 @@ class Sprig_TokenParser_Smarty_Capture extends Sprig_TokenParser_Smarty_Block {
     {
         return 'capture';
     }
-
-
-
-    
 }

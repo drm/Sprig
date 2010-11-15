@@ -24,7 +24,7 @@ class Sprig_Node_Module extends Twig_Node_Module
             $compiler
                     ->write('require_once ')
                     ->repr($plugin->getPluginFile())
-                    ->raw(";");
+                    ->raw(";\n");
         }
         parent::compileDisplayBody($compiler);
     }

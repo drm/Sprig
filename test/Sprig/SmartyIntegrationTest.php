@@ -128,7 +128,11 @@ class SmartyIntegrationTest extends BaseIntegrationTest {
     }
 
 
-    function assertOutputIsEquivalent($smartyOutput, $sprigOutput) {
-        $this->assertEquals(trim(preg_replace('/\s+/', ' ', $smartyOutput)), trim(preg_replace('/\s+/', ' ', $sprigOutput)));
+    function assertOutputIsEquivalent($expect, $actual) {
+        $expect = trim(preg_replace('/\s+/', ' ', $expect));
+        $actual = trim(preg_replace('/\s+/', ' ', $actual));
+        $this->assertGreaterThan(0, strlen($expect));
+        $this->assertGreaterThan(0, strlen($actual));
+        $this->assertEquals($expect, $actual);
     }
 }

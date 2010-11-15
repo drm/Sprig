@@ -3,7 +3,8 @@
  * @author Gerard van Helden <drm@melp.nl>
  */
 
-class Sprig_TokenParser_Smarty_Assign extends Sprig_TokenParser_Smarty_Tag {
+class Sprig_TokenParser_Smarty_Assign extends Sprig_TokenParser_Smarty_Tag
+{
     public function getTag()
     {
         return 'assign';
