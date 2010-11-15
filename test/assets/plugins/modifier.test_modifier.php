@@ -2,5 +2,5 @@
 
 // entirely useless modifier, only used for testing.
 function smarty_modifier_test_modifier($value, $prefix = '', $suffix = '') {
-    $ret = strrev($prefix . $value . $suffix);
+    return strrev($prefix . $value . $suffix);
 }
