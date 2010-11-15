@@ -68,7 +68,7 @@ abstract class BaseIntegrationTest extends PHPUnit_Framework_TestCase
     
     
     function templateFiles() {
-        $files = new RegexIterator(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(dirname(__FILE__) . "/" . $this->templateDir), RecursiveIteratorIterator::LEAVES_ONLY), '/\.tpl$/');
+        $files = new RegexIterator(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(dirname(__FILE__) . "/" . $this->templateDir . '/equivalence'), RecursiveIteratorIterator::LEAVES_ONLY), '/\.tpl$/');
         $ret = array_values(array_map(create_function('$f', 'return array(preg_replace(\'~.*/assets/integration/~\', \'\', (string)$f));'), iterator_to_array($files)));
         return $ret;
     }
@@ -125,6 +125,26 @@ class SmartyIntegrationTest extends BaseIntegrationTest {
             $this->engines['twig']->loadTemplate("$file.twig")->render($this->testData),
             $this->engines['sprig_compat']->loadTemplate("$file.twig")->render($this->testData)
         );
+    }
+
+
+    
+    function testSmartyPluginsCompatibility() {
+        $class = new ReflectionClass('Smarty');
+        $this->engines['sprig']->getExtension('pluginLoader')->addPluginDir(dirname($class->getFileName()) . '/plugins');
+
+        $this->engines['smarty']->assign($this->testData);
+        foreach(array_keys($this->engines['sprig']->getExtension('pluginLoader')->getFilters()) as $filterName) {
+            $template = 'plugins/filters/' . $filterName . '.tpl';
+            if(!is_file($this->templateDir . '/' . $template)) {
+
+            }
+            $this->assertOutputIsEquivalent(
+                $this->engines['smarty']->fetch($template),
+                $this->engines['sprig']->loadTemplate($template)->render($this->testData)
+            );
+        }
+        die();
     }
 
 
