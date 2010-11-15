@@ -164,6 +164,11 @@ class Sprig_LexerTest extends PHPUnit_Framework_TestCase {
             '{"foo`$var`foo"}'
         );
         $ret[]= array(
+            array(Twig_Token::VAR_START_TYPE, array(Twig_Token::STRING_TYPE, "foo"),
+                Twig_Token::VAR_END_TYPE),
+            '{\'foo\'}'
+        );
+        $ret[]= array(
             array(Twig_Token::VAR_START_TYPE, array(Sprig_Token::CONFIG_TYPE, 'foo'), Twig_Token::VAR_END_TYPE),
             '{#foo#}'
         );
