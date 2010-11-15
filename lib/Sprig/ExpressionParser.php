@@ -43,6 +43,7 @@ class Sprig_ExpressionParser extends Twig_ExpressionParser
                         $arguments = null;
                     }
                 } else {
+                    throw new UnexpectedValueException("Unsupported situation: a function call without arguments can not be rewritten (yet)");
                     $firstArg = new Sprig_Node_Expression_Void();
                 }
                 $node = new Sprig_Node_Expression_Test($firstArg, $token->getValue(), $arguments, $token->getLine());
