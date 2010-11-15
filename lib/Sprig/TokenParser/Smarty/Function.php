@@ -9,11 +9,6 @@ class Sprig_TokenParser_Smarty_Function extends Sprig_TokenParser_Smarty_Tag {
     }
 
 
-    public function parse(Twig_Token $token)
-    {
-        return new Sprig_Node_Smarty_Function($this->functionName, $this->parseAttributes(), null);
-    }
-
     /**
      * Gets the tag name associated with this token parser.
      *
@@ -28,6 +23,6 @@ class Sprig_TokenParser_Smarty_Function extends Sprig_TokenParser_Smarty_Tag {
 
     public function getNodeImpl()
     {
-        //TODO
+        return 'Sprig_Node_Smarty_Function';
     }
 }

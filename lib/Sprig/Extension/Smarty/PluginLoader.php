@@ -12,14 +12,6 @@ class Sprig_Extension_Smarty_PluginLoader extends Twig_Extension {
         }
     }
 
-
-    function getTokenParsers() 
-    {
-        
-        //TODO
-        return array();
-    }
-
     public function getNodeVisitors()
     {
         return array(
@@ -28,16 +20,25 @@ class Sprig_Extension_Smarty_PluginLoader extends Twig_Extension {
     }
 
 
+    function getTokenParsers() 
+    {
+        $ret = array();
+        foreach($this->getPluginFileIterator('function') as $file) {
+            $pluginName = basename($this->getPluginName($file, 'function'));
+            $ret[$pluginName] = new Sprig_Extension_Smarty_PluginLoader_FunctionTokenParser($pluginName);
+            $ret[$pluginName]->setPluginFile($file);
+        }
+        
+        return $ret;
+    }
 
-    
-    
     public function getFilters()
     {
         $ret = array();
         foreach($this->getPluginFileIterator('modifier') as $file) {
-            $modifierName = basename($this->getPluginName($file, 'modifier'));
-            $ret[$modifierName] = new Sprig_Extension_Smarty_PluginLoader_Filter('smarty_modifier_' . $modifierName);
-            $ret[$modifierName]->setPluginFile($file);
+            $pluginName = basename($this->getPluginName($file, 'modifier'));
+            $ret[$pluginName] = new Sprig_Extension_Smarty_PluginLoader_Filter('smarty_modifier_' . $pluginName);
+            $ret[$pluginName]->setPluginFile($file);
         }
         return $ret;
     }
@@ -51,7 +52,7 @@ class Sprig_Extension_Smarty_PluginLoader extends Twig_Extension {
 
     function getPluginFileIterator($type)
     {
-        $iterator = new RecursiveIteratorIterator(new Sprig_Extension_Smarty_PluginLoader_Iterator($this->pluginDirs, 'modifier'));
+        $iterator = new RecursiveIteratorIterator(new Sprig_Extension_Smarty_PluginLoader_Iterator($this->pluginDirs, $type));
         $iterator->setMaxDepth(1);
         return $iterator;
     }

@@ -72,7 +72,8 @@ abstract class BaseIntegrationTest extends PHPUnit_Framework_TestCase
         $ret = array_values(array_map(create_function('$f', 'return array(preg_replace(\'~.*/assets/integration/~\', \'\', (string)$f));'), iterator_to_array($files)));
         return $ret;
     }
-} 
+}
+
 
 /**
  * @property Smarty $smarty

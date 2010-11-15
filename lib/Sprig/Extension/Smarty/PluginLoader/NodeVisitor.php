@@ -6,20 +6,21 @@
 class Sprig_Extension_Smarty_PluginLoader_NodeVisitor implements Twig_NodeVisitorInterface
 {
     private $rootNode;
+
+    protected $plugins = array();
     protected $filters = array();
     protected $functions = array();
 
     public function leaveNode(Twig_NodeInterface $node, Twig_Environment $env)
     {
         if($node instanceof Sprig_Node_Module) {
-            $plugins = array();
             $filters = $env->getFilters();
             foreach(array_unique($this->filters) as $filterName) {
                 if($filters[$filterName] instanceof Sprig_Extension_Smarty_PluginLoader_PluginInterface) {
-                    $plugins[] = $filters[$filterName];
+                    $this->plugins[] = $filters[$filterName];
                 }
             }
-            foreach($plugins as $plugin) {
+            foreach($this->plugins as $plugin) {
                 $node->addPlugin($plugin);
             }
         }
@@ -35,6 +36,8 @@ class Sprig_Extension_Smarty_PluginLoader_NodeVisitor implements Twig_NodeVisito
             for ($i = 0; $i < count($node->getNode('filters')); $i += 2) {
                 $this->filters[]= $node->getNode('filters')->getNode($i)->getAttribute('value');
             }
+        } elseif($node instanceof Sprig_Extension_Smarty_PluginLoader_PluginInterface) {
+            $this->plugins[]= $node;
         }
         return $node;
     }
