@@ -1,0 +1,1 @@
+{"some var"|regex_replace:'/\w[oa]/':'lala'}

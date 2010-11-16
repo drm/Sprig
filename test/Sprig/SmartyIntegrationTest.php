@@ -106,7 +106,7 @@ class SmartyIntegrationTest extends BaseIntegrationTest {
      */
     function testSprigAndTwigRenderEquivalent ($file) {
         if(!is_file($this->templateDir . '/' . "$file.twig")) {
-            $this->markTestSkipped("Template $file.twig does not exist");
+            $this->markTestIncomplete("Template $file.twig does not exist");
         }
         $this->assertOutputIsEquivalent(
             $this->engines['twig']->loadTemplate("$file.twig")->render($this->testData),
@@ -119,7 +119,7 @@ class SmartyIntegrationTest extends BaseIntegrationTest {
      */
     function testTwigAndCompatSprigRenderEquivalent ($file) {
         if(!is_file($this->templateDir . '/' . "$file.twig")) {
-            $this->markTestSkipped("Template $file.twig does not exist");
+            $this->markTestIncomplete("Template $file.twig does not exist");
         }
         $this->assertOutputIsEquivalent(
             $this->engines['twig']->loadTemplate("$file.twig")->render($this->testData),
@@ -128,31 +128,40 @@ class SmartyIntegrationTest extends BaseIntegrationTest {
     }
 
 
-    
-    function testSmartyPluginsCompatibility() {
-        $class = new ReflectionClass('Smarty');
-        $this->engines['sprig']->getExtension('pluginLoader')->addPluginDir(dirname($class->getFileName()) . '/plugins');
-
+    /**
+     * @dataProvider filters
+     */
+    function testSmartyModifiersCompatibility($pluginLoader, $filterName) {
         $this->engines['smarty']->assign($this->testData);
-        foreach(array_keys($this->engines['sprig']->getExtension('pluginLoader')->getFilters()) as $filterName) {
-            $template = 'plugins/filters/' . $filterName . '.tpl';
-            if(!is_file($this->templateDir . '/' . $template)) {
-
-            }
-            $this->assertOutputIsEquivalent(
-                $this->engines['smarty']->fetch($template),
-                $this->engines['sprig']->loadTemplate($template)->render($this->testData)
-            );
+        $template = 'plugins/filters/' . $filterName . '.tpl';
+        if(!is_file($this->templateDir . '/' . $template)) {
+            $this->markTestIncomplete("$template does not exist");
         }
-        die();
+        $this->engines['sprig']->addExtension($pluginLoader);
+        $this->assertOutputIsEquivalent(
+            $this->engines['smarty']->fetch($template),
+            $this->engines['sprig']->loadTemplate($template)->render($this->testData)
+        );
+    }
+
+
+    function filters() {
+        $class = new ReflectionClass('Smarty');
+        $pluginLoader = new Sprig_Extension_Smarty_PluginLoader(array(dirname($class->getFileName()) . '/plugins'));
+        $ret = array();
+        foreach(array_keys($pluginLoader->getFilters()) as $filterName) {
+            $ret[]= array($pluginLoader, $filterName);
+        }
+        return $ret;
     }
 
 
     function assertOutputIsEquivalent($expect, $actual) {
         $expect = trim(preg_replace('/\s+/', ' ', $expect));
         $actual = trim(preg_replace('/\s+/', ' ', $actual));
-        $this->assertGreaterThan(0, strlen($expect));
-        $this->assertGreaterThan(0, strlen($actual));
         $this->assertEquals($expect, $actual);
+        if(strlen($expect) == 0 || strlen($actual) == 0) {
+            $this->markTestIncomplete("The template files render empty output");
+        }
     }
 }

@@ -72,7 +72,7 @@ class Sprig_Extension_Smarty_PluginLoader extends Twig_Extension {
      */
     public function getName()
     {
-        return 'smarty_plugins';
+        return 'pluginLoader';
     }
 
     public function addPluginDir($dir)

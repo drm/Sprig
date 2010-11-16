@@ -14,8 +14,6 @@ class Twig_Parser_Mock extends Twig_Parser {
         $this->expressionParser = new Twig_ExpressionParser($this);
 
         $this->stream = $stream;
-
-        $this->stream = $stream;
         return $this->subparse(null);
     }
 }
