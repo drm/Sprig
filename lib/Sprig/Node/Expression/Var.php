@@ -7,22 +7,21 @@ class Sprig_Node_Expression_Var extends Twig_Node_Expression_Name
 {
     protected $compileAsStrict = false;
 
-    function setCompileAsStrict($strict) 
+    function setCompileAsStrict($strict)
     {
-        $this->compileAsStrict = (bool) $strict;
+        $this->compileAsStrict = (bool)$strict;
     }
-    
-    
-    function isCompileAsStrict() 
+
+
+    function isCompileAsStrict()
     {
         return $this->compileAsStrict;
     }
-    
-    
-    
-    function compile($compiler) 
+
+
+    function compile($compiler)
     {
-        if(!$this->isCompileAsStrict()) {
+        if (!$this->isCompileAsStrict()) {
             parent::compile($compiler);
         } else {
             $compiler->raw(sprintf('$context[\'%s\']', $this->getAttribute('name')));

@@ -3,8 +3,10 @@
  * @author Gerard van Helden <drm@melp.nl>
  */
 
-class Sprig_TokenParser_Smarty_Function extends Sprig_TokenParser_Smarty_Tag {
-    function __construct($functionName) {
+class Sprig_TokenParser_Smarty_Function extends Sprig_TokenParser_Smarty_Tag
+{
+    function __construct($functionName)
+    {
         $this->functionName = $functionName;
     }
 
@@ -18,7 +20,6 @@ class Sprig_TokenParser_Smarty_Function extends Sprig_TokenParser_Smarty_Tag {
     {
         return $this->functionName;
     }
-
 
 
     public function getNodeImpl()

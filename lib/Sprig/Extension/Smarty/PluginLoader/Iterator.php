@@ -3,11 +3,13 @@
  * @author Gerard van Helden <drm@melp.nl>
  */
 
-class Sprig_Extension_Smarty_PluginLoader_Iterator extends ArrayIterator implements RecursiveIterator {
+class Sprig_Extension_Smarty_PluginLoader_Iterator extends ArrayIterator implements RecursiveIterator
+{
     protected $type;
 
-    function __construct($pluginDirs, $type) {
-        if(!in_array($type, array('modifier', 'function', 'block'))) {
+    function __construct($pluginDirs, $type)
+    {
+        if (!in_array($type, array('modifier', 'function', 'block'))) {
             throw new InvalidArgumentException("Unsupported type '$type'");
         }
         parent::__construct($pluginDirs);
@@ -21,7 +23,8 @@ class Sprig_Extension_Smarty_PluginLoader_Iterator extends ArrayIterator impleme
     }
 
 
-    public function hasChildren() {
+    public function hasChildren()
+    {
         return count($this->getChildren());
     }
 }

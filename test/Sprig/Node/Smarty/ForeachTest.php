@@ -5,8 +5,10 @@
 
 require_once dirname(__FILE__) . '/../../../assets/BodyStub.php';
 
-class Sprig_Node_Smarty_ForeachTest extends Sprig_Node_AbstractTest {
-    function setUp() {
+class Sprig_Node_Smarty_ForeachTest extends Sprig_Node_AbstractTest
+{
+    function setUp()
+    {
         parent::setUp();
         $this->node = new Sprig_Node_Smarty_Foreach(
             'foreach',
@@ -21,7 +23,8 @@ class Sprig_Node_Smarty_ForeachTest extends Sprig_Node_AbstractTest {
     }
 
 
-    function testArray() {
+    function testArray()
+    {
         $this->context['array'] = array(1, 2, 3);
 
         $stub = array();
@@ -32,7 +35,8 @@ class Sprig_Node_Smarty_ForeachTest extends Sprig_Node_AbstractTest {
     }
 
 
-    function testElse() {
+    function testElse()
+    {
         $this->context['array'] = array();
 
         $stub = array();
@@ -42,7 +46,8 @@ class Sprig_Node_Smarty_ForeachTest extends Sprig_Node_AbstractTest {
         $this->assertEquals("else", $stub);
     }
 
-    function testKey() {
+    function testKey()
+    {
         $this->context['array'] = array('a' => 'b', 'c' => 'd');
 
         $this->node = new Sprig_Node_Smarty_Foreach(
@@ -63,7 +68,8 @@ class Sprig_Node_Smarty_ForeachTest extends Sprig_Node_AbstractTest {
         $this->assertEquals(array('ab', 'cd'), $stub);
     }
 
-    function testName() {
+    function testName()
+    {
         $this->context['array'] = array(1);
 
         $this->node = new Sprig_Node_Smarty_Foreach(
@@ -85,11 +91,11 @@ class Sprig_Node_Smarty_ForeachTest extends Sprig_Node_AbstractTest {
     }
 
 
-
     /**
      * @expectedException Sprig_SyntaxError
      */
-    function testItemIsRequired() {
+    function testItemIsRequired()
+    {
         $o = new Sprig_Node_Smarty_Foreach(
             'foreach',
             array(
@@ -106,7 +112,8 @@ class Sprig_Node_Smarty_ForeachTest extends Sprig_Node_AbstractTest {
     /**
      * @expectedException Sprig_SyntaxError
      */
-    function testItemMustBeConstantName() {
+    function testItemMustBeConstantName()
+    {
         $o = new Sprig_Node_Smarty_Foreach(
             'foreach',
             array(
@@ -124,7 +131,8 @@ class Sprig_Node_Smarty_ForeachTest extends Sprig_Node_AbstractTest {
     /**
      * @expectedException Sprig_SyntaxError
      */
-    function testKeyMustBeConstantName() {
+    function testKeyMustBeConstantName()
+    {
         $o = new Sprig_Node_Smarty_Foreach(
             'foreach',
             array(
@@ -143,7 +151,8 @@ class Sprig_Node_Smarty_ForeachTest extends Sprig_Node_AbstractTest {
     /**
      * @expectedException Sprig_SyntaxError
      */
-    function testNameMustBeConstantName() {
+    function testNameMustBeConstantName()
+    {
         $o = new Sprig_Node_Smarty_Foreach(
             'foreach',
             array(

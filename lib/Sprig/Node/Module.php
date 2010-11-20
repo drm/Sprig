@@ -15,12 +15,12 @@ class Sprig_Node_Module extends Twig_Node_Module
 
     function addPlugin(Sprig_Extension_Smarty_PluginLoader_PluginInterface $plugin)
     {
-        $this->plugins[]= $plugin;
+        $this->plugins[] = $plugin;
     }
 
     protected function compileDisplayBody(Twig_Compiler $compiler)
     {
-        foreach($this->plugins as $plugin) {
+        foreach ($this->plugins as $plugin) {
             $compiler
                     ->write('require_once ')
                     ->repr($plugin->getPluginFile())

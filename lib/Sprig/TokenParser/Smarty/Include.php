@@ -3,7 +3,8 @@
  * @author Gerard van Helden <drm@melp.nl>
  */
 
-class Sprig_TokenParser_Smarty_Include extends Sprig_TokenParser_Smarty_Base {
+class Sprig_TokenParser_Smarty_Include extends Sprig_TokenParser_Smarty_Base
+{
     /**
      * Parses a token and returns a node.
      *
@@ -15,11 +16,12 @@ class Sprig_TokenParser_Smarty_Include extends Sprig_TokenParser_Smarty_Base {
     {
         $attributes = $this->parseAttributes();
         $file = $attributes['file'];
-        unset($attributes['file']);;
-        if(count($attributes)) {
+        unset($attributes['file']);
+        ;
+        if (count($attributes)) {
             $variables = array();
-            foreach($attributes as $name => $node) {
-                $variables[$name]= $node;
+            foreach ($attributes as $name => $node) {
+                $variables[$name] = $node;
             }
             $variables = new Sprig_Node_Expression_ArrayMergedWithContext($variables, $token->getLine());
         } else {
@@ -29,7 +31,8 @@ class Sprig_TokenParser_Smarty_Include extends Sprig_TokenParser_Smarty_Base {
     }
 
 
-    function getTag() {
+    function getTag()
+    {
         return 'include';
     }
 }

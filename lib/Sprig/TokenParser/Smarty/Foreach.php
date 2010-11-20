@@ -3,7 +3,8 @@
  * @author Gerard van Helden <drm@melp.nl>
  */
 
-class Sprig_TokenParser_Smarty_Foreach extends Sprig_TokenParser_Smarty_Base {
+class Sprig_TokenParser_Smarty_Foreach extends Sprig_TokenParser_Smarty_Base
+{
     public function parse(Twig_Token $token)
     {
         $tagName = $token->getValue();
@@ -27,12 +28,14 @@ class Sprig_TokenParser_Smarty_Foreach extends Sprig_TokenParser_Smarty_Base {
     }
 
 
-    public function decideForEnd($token) {
+    public function decideForEnd($token)
+    {
         return $token->test(array('endforeach'));
     }
 
 
-    function getTag() {
+    function getTag()
+    {
         return 'foreach';
     }
 }

@@ -1,14 +1,18 @@
-<phpunit 
-	bootstrap="bootstrap.php"
-	convertErrorsToExceptions="true"
-	convertNoticesToExceptions="true"
-	convertWarningsToExceptions="true"
->
-	<testsuites>
-		<testsuite><directory>test/</directory></testsuite>
-	</testsuites>
+<phpunit
+        bootstrap="bootstrap.php"
+        convertErrorsToExceptions="true"
+        convertNoticesToExceptions="true"
+        convertWarningsToExceptions="true"
+        >
+    <testsuites>
+        <testsuite>
+            <directory>test/</directory>
+        </testsuite>
+    </testsuites>
 
-	<filter>
-		<whitelist><directory suffix=".php">./lib/Sprig</directory></whitelist>
-	</filter>
+    <filter>
+        <whitelist>
+            <directory suffix=".php">./lib/Sprig</directory>
+        </whitelist>
+    </filter>
 </phpunit>

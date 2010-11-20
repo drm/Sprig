@@ -3,7 +3,8 @@
  * @author Gerard van Helden <drm@melp.nl>
  */
 
-class Sprig_Token extends Twig_Token {
+class Sprig_Token extends Twig_Token
+{
     const VAR_TYPE = 10;
     const CONFIG_TYPE = 11;
     const PHP_TYPE = 12;
@@ -11,7 +12,7 @@ class Sprig_Token extends Twig_Token {
     static function getTypeAsString($type, $short = false)
     {
         $ret = null;
-        switch($type) {
+        switch ($type) {
             case self::VAR_TYPE:
                 $name = 'VAR_TYPE';
                 break;
@@ -22,7 +23,7 @@ class Sprig_Token extends Twig_Token {
                 $ret = parent::getTypeAsString($type, $short);
                 break;
         }
-        if(is_null($ret)) {
+        if (is_null($ret)) {
             $ret = $short ? $name : __CLASS__ . '::' . $name;
         }
 

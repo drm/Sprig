@@ -4,8 +4,10 @@
  */
 
 
-class Sprig_TokenParser_Smarty_AssignTest extends Sprig_TokenParser_AbstractTest {
-    function testSyntax() {
+class Sprig_TokenParser_Smarty_AssignTest extends Sprig_TokenParser_AbstractTest
+{
+    function testSyntax()
+    {
         $this->assertNodeType('Sprig_Node_Smarty_Assign', '{assign var=name value=x}');
     }
 }
