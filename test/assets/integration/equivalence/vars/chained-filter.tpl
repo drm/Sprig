@@ -1,1 +1,0 @@
-{*See issue #7 {$var|str_replace:'oo':'aa'|str_replace:'b':'c'} *}
