@@ -9,7 +9,7 @@ class Sprig_Node_Smarty_Function extends Sprig_Node_Smarty
     {
         $compiler
                 ->addDebugInfo($this)
-                ->write('smarty_function_' . $this->getAttribute('tag'))
+                ->write('echo smarty_function_' . $this->getAttribute('tag'))
                 ->raw("(\n")
                 ->subcompile($this->getNode('parameters'))
                 ->write(",\n")

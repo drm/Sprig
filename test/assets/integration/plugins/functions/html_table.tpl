@@ -1,0 +1,1 @@
+{html_table loop=$foos cols="a,b"}

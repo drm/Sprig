@@ -22,9 +22,28 @@ class Sprig_Environment extends Twig_Environment
 
     protected $compat;
 
+    private $smartySettings = array(
+        'request_use_auto_globals'  => true,
+        'security'                  => false,
+        'debugging'                 => false,
+        'config_dir'                => 'configs',
+        'force_compile'             => false,
+        'compile_check'             => true
+    );
+
+    private $isSmartyAllowed = array(
+        'eval' => false,
+    );
+
 
     function __construct(Twig_LoaderInterface $loader = null, $options = array(), Twig_LexerInterface $lexer = null, Twig_ParserInterface $parser = null, Twig_CompilerInterface $compiler = null)
     {
+        if(!array_key_exists('base_template_class', $options)) {
+            $options['base_template_class'] = 'Sprig_Template';
+        }
+        if(!array_key_exists('trim_blocks', $options)) {
+            $options['trim_blocks'] = true;
+        }
         parent::__construct(
             $loader,
             $options,
@@ -40,5 +59,49 @@ class Sprig_Environment extends Twig_Environment
     function isCompat($compat)
     {
         return in_array($compat, $this->compat);
+    }
+
+
+
+    function getSmartyProperty($name)
+    {
+        if(!array_key_exists($name, $this->smartySettings)) {
+            throw new Exception("Property $name is unknown. If this is a bug, please report!");
+        }
+        return $this->smartySettings[$name];
+    }
+
+    
+    function setSmartyProperty($name, $value)
+    {
+        if(!array_key_exists($name, $this->smartySettings)) {
+            throw new Exception("Property $name is unknown. If this is a bug, please report!");
+        }
+        $this->smartySettings[$name] = $value;
+    }
+
+
+    function __set($name, $value)
+    {
+        $this->setSmartyProperty($name, $value);
+    }
+
+
+    function getConfig($fileName, $section = null)
+    {
+        // TODO compile & cache
+        $ret = false;
+        foreach((array) $this->getSmartyProperty('config_dir') as $dir) {
+            if(is_dir($dir) && is_file($file = rtrim($dir, '/') . '/' . $fileName)) {
+                $parser = new Sprig_ConfigParser();
+                $ret = $parser->parse(file_get_contents($file));
+            }
+        }
+        if(!is_null($section)) {
+            $ret = array_key_exists($section, $ret) ? $ret[$section] : array();
+        }
+        
+        return $ret;
+        die();
     }
 }

@@ -24,11 +24,11 @@ class Sprig_ConfigParser
                 $i += strlen($m[0]);
                 $str = substr($configData, $i);
                 // TODO, DRY this up :)
-                if(preg_match('/^"""(.*)"""\s*(\n|$)/s', $str, $m)) {
+                if(preg_match('/^"""(.*?)"""\s*(\n|$)/s', $str, $m)) {
                     $value = $m[1];
                     $i += strlen($m[0]);
                 } elseif(preg_match('/^(' . $this->lexer->regex['double_string'] . ')\s*(?:\n|$)/', $str, $m)) {
-                    $value = $m[1];
+                    $value = $m[2];
                     $i += strlen($m[0]);
                 } elseif(preg_match('/^(' . $this->lexer->regex['number'] .')\s*?(?:\n|$)/', $str, $m)) {
                     $value = $m[0];

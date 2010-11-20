@@ -6,9 +6,11 @@
 class Sprig_Extension_Smarty_PluginLoader extends Twig_Extension
 {
     protected $pluginDirs = array();
+    protected $reserved   = array();
 
-    function __construct(array $dirs = array())
+    function __construct(array $dirs = array(), array $reserved = array('config_load'))
     {
+        $this->reserved = $reserved;
         foreach ($dirs as $dir) {
             $this->addPluginDir($dir);
         }
@@ -22,15 +24,27 @@ class Sprig_Extension_Smarty_PluginLoader extends Twig_Extension
     }
 
 
+    function isReserved($name)
+    {
+        return in_array($name, $this->reserved);
+    }
+
+
     function getTokenParsers()
     {
         $ret = array();
         foreach ($this->getPluginFileIterator('function') as $file) {
             $pluginName = basename($this->getPluginName($file, 'function'));
+            if($this->isReserved($pluginName)) {
+                continue;
+            }
             $ret[$pluginName] = new Sprig_Extension_Smarty_PluginLoader_FunctionTokenParser($pluginName);
             $ret[$pluginName]->setPluginFile($file);
         }
         foreach ($this->getPluginFileIterator('block') as $file) {
+            if($this->isReserved($pluginName)) {
+                continue;
+            }
             $pluginName = basename($this->getPluginName($file, 'block'));
             $ret[$pluginName] = new Sprig_Extension_Smarty_PluginLoader_BlockTokenParser($pluginName);
             $ret[$pluginName]->setPluginFile($file);
@@ -62,6 +76,18 @@ class Sprig_Extension_Smarty_PluginLoader extends Twig_Extension
         $iterator = new RecursiveIteratorIterator(new Sprig_Extension_Smarty_PluginLoader_Iterator($this->pluginDirs, $type));
         $iterator->setMaxDepth(1);
         return $iterator;
+    }
+
+
+    function getPluginFilePath($type, $name) {
+        $ret = null;
+        foreach($this->getPluginFileIterator($type) as $fileName) {
+            if(basename($fileName) == "$type.$name.php") {
+                $ret = $fileName;
+                break;
+            }
+        }
+        return (string)$ret;
     }
 
 

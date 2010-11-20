@@ -9,7 +9,7 @@ class Sprig_Extension_Smarty_PluginLoader_Iterator extends ArrayIterator impleme
 
     function __construct($pluginDirs, $type)
     {
-        if (!in_array($type, array('modifier', 'function', 'block'))) {
+        if (!in_array($type, array('modifier', 'function', 'block', 'compiler', 'shared'))) {
             throw new InvalidArgumentException("Unsupported type '$type'");
         }
         parent::__construct($pluginDirs);

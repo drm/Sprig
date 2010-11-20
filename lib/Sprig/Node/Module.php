@@ -5,12 +5,6 @@
 
 class Sprig_Node_Module extends Twig_Node_Module
 {
-    public function __construct(Twig_NodeInterface $body, Twig_Node_Expression $parent = null, Twig_NodeInterface $blocks, Twig_NodeInterface $macros, $filename)
-    {
-        parent::__construct($body, $parent, $blocks, $macros, $filename);
-    }
-
-
     protected $plugins = array();
 
     function addPlugin(Sprig_Extension_Smarty_PluginLoader_PluginInterface $plugin)
@@ -20,14 +14,23 @@ class Sprig_Node_Module extends Twig_Node_Module
 
     protected function compileDisplayBody(Twig_Compiler $compiler)
     {
-        foreach ($this->plugins as $plugin) {
-            $compiler
-                    ->write('require_once ')
-                    ->repr($plugin->getPluginFile())
-                    ->raw(";\n");
-        }
+        $this->compilePluginRequirements($compiler);
+        $compiler->write('$this->_tpl_vars =& $context;');
         parent::compileDisplayBody($compiler);
     }
 
 
+    protected function compilePluginRequirements($compiler)
+    {
+        $requires = array();
+        foreach ($this->plugins as $plugin) {
+            $requires[] = $plugin->getPluginFile();
+        }
+        foreach (array_unique($requires) as $require) {
+            $compiler
+                    ->write('require_once ')
+                    ->repr($require)
+                    ->raw(";\n");
+        }
+    }
 }

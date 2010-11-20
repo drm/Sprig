@@ -1,0 +1,1 @@
+{mailto address="info@example.org" encode="hex"}

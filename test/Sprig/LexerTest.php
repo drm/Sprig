@@ -180,6 +180,15 @@ class Sprig_LexerTest extends PHPUnit_Framework_TestCase
             array(Twig_Token::VAR_START_TYPE, array(Sprig_Token::CONFIG_TYPE, 'foo'), Twig_Token::VAR_END_TYPE),
             '{#foo#}'
         );
+        $ret[]= array(
+            array(Twig_Token::BLOCK_START_TYPE, Twig_Token::NAME_TYPE, Twig_Token::BLOCK_END_TYPE, Twig_Token::TEXT_TYPE),
+            '{foo}   '
+        );
+        $ret[]= array(
+            array(Twig_Token::BLOCK_START_TYPE, Twig_Token::NAME_TYPE, Twig_Token::BLOCK_END_TYPE, 
+                  Twig_Token::BLOCK_START_TYPE, Twig_Token::NAME_TYPE, Twig_Token::BLOCK_END_TYPE),
+            "{foo}\n{foo}" // block is trimmed, so expected behaviour (same as PHP delimiters)
+        );
 
         return $ret;
     }

@@ -26,7 +26,8 @@ abstract class BaseIntegrationTest extends PHPUnit_Framework_TestCase
                 array('bar2' => 'baz2'),
                 array('bar3' => 'baz3')
             ),
-            'var' => 'floobiedoobiedoo'
+            'var' => 'floobiedoobiedoo',
+            'num' => rand(10, 100)
         );
         $this->templateDir = dirname(__FILE__) . '/' . $this->templateDir;
 
@@ -43,6 +44,7 @@ abstract class BaseIntegrationTest extends PHPUnit_Framework_TestCase
         $this->engines['smarty']->compile_dir = $this->tmpDir;
         $this->engines['smarty']->template_dir = $this->templateDir;
         $this->engines['smarty']->config_load($this->templateDir . '/vars.conf');
+        $this->engines['smarty']->config_dir = dirname(__FILE__) . '/../assets/configs/';
 
         $pluginLoader = new Sprig_Extension_Smarty_PluginLoader();
         $pluginLoader->addPluginDir(dirname(__FILE__) . '/../assets/plugins/');
@@ -51,6 +53,7 @@ abstract class BaseIntegrationTest extends PHPUnit_Framework_TestCase
         $this->engines['sprig']->addExtension(new Sprig_Extension_StrictTests());
         $this->engines['sprig']->addExtension(new Sprig_Extension_Smarty());
         $this->engines['sprig']->addExtension($pluginLoader);
+        $this->engines['sprig']->config_dir = dirname(__FILE__) . '/../assets/configs/';
 
         $this->engines['twig'] = new Twig_Environment(clone $loader, $options);
         $this->engines['twig']->addExtension(new Sprig_Extension_StrictTests());
@@ -150,6 +153,23 @@ class SmartyIntegrationTest extends BaseIntegrationTest
         );
     }
 
+    /**
+     * @dataProvider functions
+     */
+    function testSmartyFunctionsCompatibility($pluginLoader, $filterName)
+    {
+        $this->engines['smarty']->assign($this->testData);
+        $template = 'plugins/functions/' . $filterName . '.tpl';
+        if (!is_file($this->templateDir . '/' . $template)) {
+            $this->markTestIncomplete("$template does not exist");
+        }
+        $this->engines['sprig']->addExtension($pluginLoader);
+        $this->assertOutputIsEquivalent(
+            $this->engines['smarty']->fetch($template),
+            $this->engines['sprig']->loadTemplate($template)->render($this->testData)
+        );
+    }
+
 
     function filters()
     {
@@ -159,6 +179,20 @@ class SmartyIntegrationTest extends BaseIntegrationTest
         foreach (array_keys($pluginLoader->getFilters()) as $filterName) {
             $ret[] = array($pluginLoader, $filterName);
         }
+        return $ret;
+    }
+
+    function functions()
+    {
+        $class = new ReflectionClass('Smarty');
+        $pluginLoader = new Sprig_Extension_Smarty_PluginLoader(array(dirname($class->getFileName()) . '/plugins'));
+        $ret = array();
+        foreach ($pluginLoader->getTokenParsers() as $filterName) {
+            if($filterName instanceof Sprig_Extension_Smarty_PluginLoader_FunctionTokenParser) {
+                $ret[] = array($pluginLoader, $filterName->getTag());
+            }
+        }
+        $ret[]= array($pluginLoader, 'config_load'); // special case
         return $ret;
     }
 

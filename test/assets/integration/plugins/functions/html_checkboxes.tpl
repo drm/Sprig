@@ -1,0 +1,1 @@
+{html_checkboxes name="test"  values=$foos}
