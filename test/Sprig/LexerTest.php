@@ -111,7 +111,6 @@ class Sprig_LexerTest extends PHPUnit_Framework_TestCase
         $ret[] = array(array(), '');
         $ret[] = array(array(Twig_Token::TEXT_TYPE), ' ');
         $ret[] = array(array(Twig_Token::TEXT_TYPE), 'data');
-        $ret[] = array(array(Twig_Token::TEXT_TYPE), '{literal}data{/literal}');
         $ret[] = array(array(), '{* comment *}');
         $ret[] = array(array(Twig_Token::TEXT_TYPE, Twig_Token::VAR_START_TYPE, Sprig_Token::VAR_TYPE, Twig_Token::VAR_END_TYPE), 'data { $var }');
         $ret[] = array(array(Twig_Token::BLOCK_START_TYPE, Twig_Token::NAME_TYPE, Twig_Token::BLOCK_END_TYPE), '{block}');
@@ -122,12 +121,20 @@ class Sprig_LexerTest extends PHPUnit_Framework_TestCase
         );
         $ret[] = array(
             array(Twig_Token::BLOCK_START_TYPE, Twig_Token::NAME_TYPE, Twig_Token::BLOCK_END_TYPE,
+                  Twig_Token::TEXT_TYPE,
                   Twig_Token::BLOCK_START_TYPE, Twig_Token::NAME_TYPE, Twig_Token::BLOCK_END_TYPE),
-            '{block}{/block}'
+            '{literal} {tag} {/literal}'
+        );
+        $ret[] = array(
+            array(Twig_Token::BLOCK_START_TYPE, Twig_Token::NAME_TYPE, Twig_Token::BLOCK_END_TYPE,
+                  Twig_Token::TEXT_TYPE,
+                  Twig_Token::BLOCK_START_TYPE, Twig_Token::NAME_TYPE, Twig_Token::BLOCK_END_TYPE,
+                  Twig_Token::TEXT_TYPE,
+                  Twig_Token::BLOCK_START_TYPE, Twig_Token::NAME_TYPE, Twig_Token::BLOCK_END_TYPE),
+            '{block} {tag} {/block}'
         );
 
         // compatibility features
-        $ret[] = array(array(Sprig_Token::PHP_TYPE), '{php}data{/php}');
         $ret[] = array(
             array(Twig_Token::VAR_START_TYPE, Sprig_Token::VAR_TYPE, array(Twig_Token::OPERATOR_TYPE, '.'),
                   Twig_Token::NAME_TYPE, Twig_Token::VAR_END_TYPE),

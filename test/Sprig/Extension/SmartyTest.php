@@ -9,7 +9,10 @@ class Sprig_Extension_SmartyTest extends PHPUnit_Framework_TestCase
         'include',
         'assign',
         'capture',
-        'config_load'
+        'config_load',
+        'raw',
+        'literal',
+        'php',
     );
 
 

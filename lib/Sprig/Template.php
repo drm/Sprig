@@ -2,7 +2,7 @@
 
 abstract class Sprig_Template extends Twig_Template
 {
-    protected $_tpl_vars = array();
+    public $_tpl_vars = array();
 
     function assign($name, $value)
     {

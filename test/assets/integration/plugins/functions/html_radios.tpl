@@ -1,0 +1,1 @@
+{html_radios options=$foos}

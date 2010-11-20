@@ -95,12 +95,32 @@ class Sprig_Lexer implements Twig_LexerInterface
                 $data = '';
             }
 
-            if(preg_match('/^' . $this->regex['block_start'] . '\s*(literal|raw|php)\s*' . $this->regex['block_end'] . '(.*?)' . $this->regex['block_start'] . '(\s*\/\s*|\s*end)(\\1)\s*' . $this->regex['block_end'] . '/s', substr($this->code, $this->ptr), $match)) {
-                $this->ptr += strlen($match[0]);
-                if ($match[1] == 'php' && $this->isCompat(Sprig_Environment::COMPAT_PHP_BLOCKS)) {
-                    $this->tokens[] = new Sprig_Token(Sprig_Token::PHP_TYPE, $match[2], $this->line());
-                } else {
-                    $data .= $match[2];
+            if(preg_match(
+                '/^
+                    (' . $this->regex['block_start'] . ')
+                        \s*(literal|raw|php)\s*
+                    (' . $this->regex['block_end'] . ')
+                        (.*?)
+                    (' . $this->regex['block_start'] . ')
+                        ((?:\s*\/\s*|\s*end)(?:\\2))\s*
+                    (' . $this->regex['block_end'] . ')
+                /sx', substr($this->code, $this->ptr), $match)) {
+                $this->ptr += strlen(array_shift($match));
+                foreach(
+                    array(
+                        Twig_Token::BLOCK_START_TYPE,
+                        Twig_Token::NAME_TYPE,
+                        Twig_Token::BLOCK_END_TYPE,
+                        Twig_Token::TEXT_TYPE,
+                        Twig_Token::BLOCK_START_TYPE,
+                        Twig_Token::NAME_TYPE,
+                        Twig_Token::BLOCK_END_TYPE
+                    ) as $tokenType) {
+                    $value = array_shift($match);
+                    if($tokenType == Twig_Token::NAME_TYPE) {
+                        $value = preg_replace('~^/~', 'end', $value);
+                    }
+                    $this->tokens[]= new Twig_Token($tokenType, $value, $this->line());
                 }
             } elseif (false !== $this->isMatch($this->regex['comment_start'])) {
                 $this->skipAhead($this->regex['comment_end'], true);

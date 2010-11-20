@@ -24,6 +24,9 @@ class Sprig_Extension_Smarty extends Twig_Extension
             new Sprig_TokenParser_Smarty_Capture(),
             new Sprig_TokenParser_Smarty_Section(),
             new Sprig_TokenParser_Smarty_ConfigLoad(),
+            new Sprig_TokenParser_Smarty_Raw('php', 'Sprig_Node_Smarty_Php'),
+            new Sprig_TokenParser_Smarty_Raw('literal', 'Twig_Node_Text'),
+            new Sprig_TokenParser_Smarty_Raw('raw', 'Twig_Node_Text'),
         );
 
         foreach ($this->functions as $function) {

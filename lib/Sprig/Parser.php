@@ -10,5 +10,4 @@ class Sprig_Parser extends Twig_Parser
         parent::__construct($env);
         $this->expressionParser = new Sprig_ExpressionParser($this);
     }
-
 }
