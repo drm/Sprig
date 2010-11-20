@@ -10,7 +10,7 @@ abstract class Sprig_TokenParser_Smarty_Tag extends Sprig_TokenParser_Smarty_Bas
 
     public function parse(Twig_Token $token) {
         $class = $this->getNodeImpl();
-        return new $class($token->getValue(), $this->parseAttributes(), null);
+        return new $class($token->getValue(), $this->parseAttributes(), null, $token->getLine());
     }
 
 

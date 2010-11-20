@@ -4,12 +4,10 @@
  */
 
 class Sprig_Node_Smarty_Foreach extends Sprig_Node_Smarty {
-    public $else;
-
-    
-    function __construct($tagName, $attributes, $body, $else)
+    function __construct($tagName, $parameters, $body, $else, $lineNo)
     {
-        parent::__construct($tagName, $attributes, $body);
+        parent::__construct($tagName, $parameters, $body, $lineNo);
+        $this->setNode('else', $else);
         $this->else = $else;
     }
 
@@ -21,37 +19,37 @@ class Sprig_Node_Smarty_Foreach extends Sprig_Node_Smarty {
         ;
         $itemName = $keyName = $nameName = null;
 
-        if(!$this->hasAttribute('item')) {
+        if(!$this->hasParameter('item')) {
             throw new Sprig_SyntaxError('Item attribute is required', null); // TODO line number
-        } elseif($this->attributes['item'] instanceof Twig_Node_Expression_Constant) {
-            $itemName = $this->attributes['item']->getAttribute('value');
+        } elseif($this->getParameter('item') instanceof Twig_Node_Expression_Constant) {
+            $itemName = $this->getParameter('item')->getAttribute('value');
         } else {
-            throw new Sprig_SyntaxError('item must be a literal name', $this->attributes['item']->getLine());
+            throw new Sprig_SyntaxError('item must be a literal name', $this->getParameter('item')->getLine());
         }
-        if($this->hasAttribute('key')) {
-            if(!$this->attributes['key'] instanceof Twig_Node_Expression_Constant) {
-                throw new Sprig_SyntaxError('key must be a literal name', $this->attributes['key']->getLine());
+        if($this->hasParameter('key')) {
+            if(!$this->getParameter('key') instanceof Twig_Node_Expression_Constant) {
+                throw new Sprig_SyntaxError('key must be a literal name', $this->getParameter('item')->getLine());
             }
-            $keyName = $this->attributes['key']->getAttribute('value');
+            $keyName = $this->getParameter('key')->getAttribute('value');
         }
-        if($this->hasAttribute('name')) {
-            if(!$this->attributes['name'] instanceof Twig_Node_Expression_Constant) {
-                throw new Sprig_SyntaxError('name must be a literal name', $this->attributes['name']->getLine());
+        if($this->hasParameter('name')) {
+            if(!$this->getParameter('name') instanceof Twig_Node_Expression_Constant) {
+                throw new Sprig_SyntaxError('name must be a literal name', $this->getParameter('name')->getLine());
             }
-            $nameName = $this->attributes['name']->getAttribute('value');
+            $nameName = $this->getParameter('name')->getAttribute('value');
         }
 
         $compiler
                 ->write('$context[\'_parent\'] = (array) $context;'."\n")
                 ->write('$from = (array)')
-                ->subcompile($this->attributes['from'])
+                ->subcompile($this->getParameter('from'))
                 ->raw(';' ."\n")
         ;
         if($this->else) {
             $compiler
                     ->write('if(empty($from) || count($from) == 0) {' . "\n")
                     ->indent()
-                    ->subcompile($this->else)
+                    ->subcompile($this->getNode('else'))
                     ->outdent()
                     ->write("} else {\n")
                     ->indent();
@@ -77,7 +75,7 @@ class Sprig_Node_Smarty_Foreach extends Sprig_Node_Smarty {
         }
 
         $compiler
-                ->subcompile($this->body)
+                ->subcompile($this->getNode('body'))
                 ->outdent()
                 ->write('}');
         if($this->else) {

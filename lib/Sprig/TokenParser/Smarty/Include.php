@@ -14,16 +14,18 @@ class Sprig_TokenParser_Smarty_Include extends Sprig_TokenParser_Smarty_Base {
     public function parse(Twig_Token $token)
     {
         $attributes = $this->parseAttributes();
-        $vars = $attributes;
-        unset($vars['file']);
-        if(count($vars)) {
-            $first = current($vars);
-            $lineno = $first->getLine();
-            $variables = new Sprig_Node_Expression_ArrayMergedWithContext($vars, $lineno);
+        $file = $attributes['file'];
+        unset($attributes['file']);;
+        if(count($attributes)) {
+            $variables = array();
+            foreach($attributes as $name => $node) {
+                $variables[$name]= $node;
+            }
+            $variables = new Sprig_Node_Expression_ArrayMergedWithContext($variables, $token->getLine());
         } else {
             $variables = null;
         }
-        return new Twig_Node_Include($attributes['file'], $variables, false, $token->getLine());
+        return new Twig_Node_Include($file, $variables, false, $token->getLine());
     }
 
 

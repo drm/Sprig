@@ -4,13 +4,10 @@
  */
 
 class Sprig_Node_Smarty_Section extends Sprig_Node_Smarty {
-    public $else;
-
-
-    function __construct($tagName, $attributes, $body, $else)
+    function __construct($tagName, $parameters, $body, $else, $lineNo)
     {
-        parent::__construct($tagName, $attributes, $body);
-        $this->else = $else;
+        parent::__construct($tagName, $parameters, $body, $lineNo);
+        $this->setNode('else', $else);
     }
 
 
@@ -20,8 +17,8 @@ class Sprig_Node_Smarty_Section extends Sprig_Node_Smarty {
             ->addDebugInfo($this)
         ;
 
-        if($this->attributes['name'] instanceof Twig_Node_Expression_Constant) {
-            $itemName = $this->attributes['name']->getAttribute('value');
+        if($this->getParameter('name') instanceof Twig_Node_Expression_Constant) {
+            $itemName = $this->getParameter('name')->getAttribute('value');
         } else {
             throw new Sprig_SyntaxError('missing name attribute', $this->attributes['name']->getLine());
         }
@@ -34,7 +31,7 @@ class Sprig_Node_Smarty_Section extends Sprig_Node_Smarty {
 
 
 //      foreach ($attrs as $attr_name => $attr_value) {
-        foreach ($this->attributes as $attrName => $attrValue) {
+        foreach ($this->getNode('parameters') as $attrName => $attrValue) {
             switch ($attrName) {
                 case 'loop':
 //                        $output .= "{$section_props}['loop'] = is_array(\$_loop=$attr_value) ? count(\$_loop) : max(0, (int)\$_loop); unset(\$_loop);\n";
@@ -96,13 +93,13 @@ class Sprig_Node_Smarty_Section extends Sprig_Node_Smarty {
             }
         }
 
-        if (!isset($this->attributes['show']))
+        if (!$this->hasParameter('show'))
             $compiler->write($sectionContainer . '[\'show\'] = true;' . "\n");
 
-        if (!isset($this->attributes['loop']))
+        if (!$this->hasParameter('loop'))
             $compiler->write($sectionContainer . '[\'loop\'] = 1;' . "\n");
 
-        if (!isset($this->attributes['max']))
+        if (!$this->hasParameter('max'))
             $compiler->write($sectionContainer . '[\'max\'] = ' . $sectionContainer . '[\'loop\'];' . "\n");
         else
             $compiler
@@ -113,10 +110,10 @@ class Sprig_Node_Smarty_Section extends Sprig_Node_Smarty {
                     ->write("}\n")
             ;
 
-        if (!isset($this->attributes['step']))
+        if (!$this->hasParameter('step'))
             $compiler->write($sectionContainer . '[\'step\'] = 1;' . "\n");
 
-        if (!isset($this->attributes['start']))
+        if (!$this->hasParameter('start'))
             $compiler->write($sectionContainer . '[\'start\'] = ' . $sectionContainer . '[\'step\'] > 0 ? 0 : ' . $sectionContainer . '[\'loop\'] -1; ' . "\n");
         else {
             $compiler
@@ -145,7 +142,7 @@ class Sprig_Node_Smarty_Section extends Sprig_Node_Smarty {
                 ->indent()
         ;
 
-        if (!isset($this->attributes['start']) && !isset($this->attributes['step']) && !isset($this->attributes['max'])) {
+        if (!$this->hasParameter('start') && !$this->hasParameter('step') && !$this->hasParameter('max')) {
             $compiler->write($sectionContainer . '[\'total\'] = ' . $sectionContainer . '[\'loop\'];' . "\n");
         } else {
             $compiler
@@ -202,18 +199,18 @@ class Sprig_Node_Smarty_Section extends Sprig_Node_Smarty {
                     ->write("{$sectionContainer}['index_next']  = {$sectionContainer}['index'] + {$sectionContainer}['step'];\n")
                     ->write("{$sectionContainer}['first']       = ({$sectionContainer}['iteration'] == 1);\n")
                     ->write("{$sectionContainer}['last']        = ({$sectionContainer}['iteration'] == {$sectionContainer}['total']);\n")
-                    ->subcompile($this->body)
+                    ->subcompile($this->getNode('body'))
                     ->outdent()
                     ->write('} // for' . "\n")
                     ->outdent()
         ;
 
 
-        if($this->else) {
+        if($this->hasNode('else') && null !== $this->getNode('else')) {
             $compiler
                     ->write('} else {' . "\n")
                     ->indent()
-                    ->subcompile($this->else)
+                    ->subcompile($this->getNode('else'))
                     ->outdent()
                     ->write('}' . "\n");
         } else {

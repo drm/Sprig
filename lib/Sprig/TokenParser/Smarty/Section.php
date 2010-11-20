@@ -17,7 +17,7 @@ class Sprig_TokenParser_Smarty_Section extends Sprig_TokenParser_Smarty_Base {
         }
         $this->parser->getStream()->expect(Twig_Token::BLOCK_END_TYPE);
 
-        return new Sprig_Node_Smarty_Section($tagName, $attributes, $body, $else);
+        return new Sprig_Node_Smarty_Section($tagName, $attributes, $body, $else, $token->getLine());
     }
 
 

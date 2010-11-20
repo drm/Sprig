@@ -10,7 +10,7 @@ abstract class Sprig_TokenParser_Smarty_Block extends Sprig_TokenParser_Smarty_T
         $body = $this->parser->subparse(array($this, 'decideBlockEnd'), true);
         $this->parser->getStream()->expect(Twig_Token::BLOCK_END_TYPE);
 
-        return new $class($token->getValue(), $attributes, $body);
+        return new $class($token->getValue(), $attributes, $body, $token->getLine());
     }
 
 

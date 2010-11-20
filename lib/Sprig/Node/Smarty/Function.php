@@ -7,23 +7,12 @@ class Sprig_Node_Smarty_Function extends Sprig_Node_Smarty {
     function compile($compiler) {
         $compiler
                 ->addDebugInfo($this)
-                ->write('smarty_function_' . $this->tagName)
+                ->write('smarty_function_' . $this->getAttribute('tag'))
                 ->raw("(\n")
-                ->indent()
-                ->write('array(' . "\n")
-                ->indent()
+                ->subcompile($this->getNode('parameters'))
+                ->write(",\n")
+                ->write("\$this\n")
+                ->write(");\n")
         ;
-
-        $i = 0;
-        foreach($this->attributes as $name => $expression) {
-            if($i ++ > 0) {
-                $compiler->raw(",\n");
-            }
-            $compiler
-                    ->write("")->repr($name)->raw(' => ')
-                    ->subcompile($expression)
-            ;
-        }
-        $compiler->outdent()->write("),\n")->write("\$this\n")->outdent()->write(");\n");;
     }
 }

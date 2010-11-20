@@ -9,11 +9,12 @@ abstract class Sprig_TokenParser_Smarty_Base implements Twig_TokenParserInterfac
 
     final public function parseAttributes()
     {
+        $params = new Sprig_Node_Smarty_ParameterList();
         $attributes = array();
         while($this->parser->getStream()->test(Twig_Token::NAME_TYPE)) {
-            $attrName = $this->parser->getStream()->next()->getValue();
+            $name = $this->parser->getStream()->next();
             $this->parser->getStream()->expect(Twig_Token::OPERATOR_TYPE, '=');
-            $attributes[$attrName] = $this->parser->getExpressionParser()->parseExpression();
+            $attributes[$name->getValue()]= $this->parser->getExpressionParser()->parseExpression();
         }
         $this->parser->getStream()->expect(Twig_Token::BLOCK_END_TYPE);
         return $attributes;

@@ -15,7 +15,8 @@ class Sprig_Node_Smarty_ForeachTest extends Sprig_Node_AbstractTest {
                  'item' => $this->_expr('itemName'),
             ),
             new Sprig_Node_Expression_BodyStub('$stub[] = $context[\'itemName\'];'),
-            new Sprig_Node_Expression_BodyStub('$stub = "else";')
+            new Sprig_Node_Expression_BodyStub('$stub = "else";'),
+            null
         );
     }
 
@@ -52,7 +53,8 @@ class Sprig_Node_Smarty_ForeachTest extends Sprig_Node_AbstractTest {
                  'key' => $this->_expr('keyName'),
             ),
             new Sprig_Node_Expression_BodyStub('$stub[] = $context[\'keyName\'] . $context[\'itemName\'];'),
-            new Sprig_Node_Expression_BodyStub('$stub = "else";')
+            new Sprig_Node_Expression_BodyStub('$stub = "else";'),
+            null
         );
         $stub = array();
         $context = $this->context;
@@ -72,6 +74,7 @@ class Sprig_Node_Smarty_ForeachTest extends Sprig_Node_AbstractTest {
                  'name' => $this->_expr('name'),
             ),
             new Sprig_Node_Expression_BodyStub('$stub = $context[\'smarty\'][\'foreach\'];'),
+            null,
             null
         );
         $stub = array();
@@ -93,7 +96,8 @@ class Sprig_Node_Smarty_ForeachTest extends Sprig_Node_AbstractTest {
                  'from' => new Sprig_Node_Expression_Var('array', -1)
             ),
             new Sprig_Node_Expression_BodyStub(''),
-            new Sprig_Node_Expression_BodyStub('')
+            new Sprig_Node_Expression_BodyStub(''),
+            null
         );
         $o->compile($this->compiler);
     }
@@ -110,7 +114,8 @@ class Sprig_Node_Smarty_ForeachTest extends Sprig_Node_AbstractTest {
                  'item' => new Sprig_Node_Expression_Var('array', -1)
             ),
             new Sprig_Node_Expression_BodyStub(''),
-            new Sprig_Node_Expression_BodyStub('')
+            new Sprig_Node_Expression_BodyStub(''),
+            null
         );
         $o->compile($this->compiler);
     }
@@ -128,7 +133,8 @@ class Sprig_Node_Smarty_ForeachTest extends Sprig_Node_AbstractTest {
                  'key' => new Sprig_Node_Expression_Var('array', -1)
             ),
             new Sprig_Node_Expression_BodyStub(''),
-            new Sprig_Node_Expression_BodyStub('')
+            new Sprig_Node_Expression_BodyStub(''),
+            null
         );
         $o->compile($this->compiler);
     }
@@ -147,7 +153,8 @@ class Sprig_Node_Smarty_ForeachTest extends Sprig_Node_AbstractTest {
                  'name' => new Sprig_Node_Expression_Var('name', -1),
             ),
             new Sprig_Node_Expression_BodyStub(''),
-            new Sprig_Node_Expression_BodyStub('')
+            new Sprig_Node_Expression_BodyStub(''),
+            null
         );
         $o->compile($this->compiler);
     }
