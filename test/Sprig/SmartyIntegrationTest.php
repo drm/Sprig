@@ -170,6 +170,23 @@ class SmartyIntegrationTest extends BaseIntegrationTest
         );
     }
 
+    /**
+     * @dataProvider blocks
+     */
+    function testSmartyBlocksCompatibility($pluginLoader, $filterName)
+    {
+        $this->engines['smarty']->assign($this->testData);
+        $template = 'plugins/block/' . $filterName . '.tpl';
+        if (!is_file($this->templateDir . '/' . $template)) {
+            $this->markTestIncomplete("$template does not exist");
+        }
+        $this->engines['sprig']->addExtension($pluginLoader);
+        $this->assertOutputIsEquivalent(
+            $this->engines['smarty']->fetch($template),
+            $this->engines['sprig']->loadTemplate($template)->render($this->testData)
+        );
+    }
+
 
     function filters()
     {
@@ -193,6 +210,20 @@ class SmartyIntegrationTest extends BaseIntegrationTest
             }
         }
         $ret[]= array($pluginLoader, 'config_load'); // special case
+        return $ret;
+    }
+
+
+    function blocks()
+    {
+        $class = new ReflectionClass('Smarty');
+        $pluginLoader = new Sprig_Extension_Smarty_PluginLoader(array(dirname($class->getFileName()) . '/plugins'));
+        $ret = array();
+        foreach ($pluginLoader->getTokenParsers() as $filterName) {
+            if($filterName instanceof Sprig_Extension_Smarty_PluginLoader_BlockTokenParser) {
+                $ret[] = array($pluginLoader, $filterName->getTag());
+            }
+        }
         return $ret;
     }
 

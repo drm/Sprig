@@ -16,11 +16,11 @@ class Sprig_Node_Smarty_Block extends Sprig_Node_Smarty
                 ->outdent()
                 ->raw("\n")
                 ->write(");\n")
-                ->write('smarty_block_' . $this->tag)
+                ->write('echo smarty_block_' . $this->tag)
                 ->raw('($_block_params, null, $this);' . "\n")
                 ->write('ob_start();' . "\n")
                 ->subcompile($this->getNode('body'))
-                ->write('smarty_block_' . $this->tag)
+                ->write('echo smarty_block_' . $this->tag)
                 ->raw('(array_pop($_block_params), ob_get_clean(), $this);' . "\n");
     }
 }
