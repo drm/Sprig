@@ -84,67 +84,65 @@ class Sprig_Lexer implements Twig_LexerInterface
             // sanity check
             $prePtr = $this->ptr;
 
-            if (preg_match('/^\{\s*(literal|raw|php)\s*}(.*?)\{(\s*\/\s*|\s*end)(\\1)\s*}/s', substr($this->code, $this->ptr), $match)) {
+            $data .= $this->skipAhead(array(
+                                          $this->regex['comment_start'],
+                                          $this->regex['block_start'],
+                                          $this->regex['var_start']
+                                     ));
+
+            if ($data) {
+                $this->tokens[] = new Twig_Token(Twig_Token::TEXT_TYPE, $data, $this->line());
+                $data = '';
+            }
+
+            if(preg_match('/^' . $this->regex['block_start'] . '\s*(literal|raw|php)\s*' . $this->regex['block_end'] . '(.*?)' . $this->regex['block_start'] . '(\s*\/\s*|\s*end)(\\1)\s*' . $this->regex['block_end'] . '/s', substr($this->code, $this->ptr), $match)) {
                 $this->ptr += strlen($match[0]);
                 if ($match[1] == 'php' && $this->isCompat(Sprig_Environment::COMPAT_PHP_BLOCKS)) {
                     $this->tokens[] = new Sprig_Token(Sprig_Token::PHP_TYPE, $match[2], $this->line());
                 } else {
                     $data .= $match[2];
                 }
-            } else {
-                $data = $this->skipAhead(array(
-                                              $this->regex['comment_start'],
-                                              $this->regex['block_start'],
-                                              $this->regex['var_start']
-                                         ));
-
-                if ($data) {
-                    $this->tokens[] = new Twig_Token(Twig_Token::TEXT_TYPE, $data, $this->line());
-                    $data = '';
+            } elseif (false !== $this->isMatch($this->regex['comment_start'])) {
+                $this->skipAhead($this->regex['comment_end'], true);
+            } elseif (
+                false !== ($start = $this->isMatch(array($this->regex['block_start'], $this->regex['var_start']), 0, false))
+            ) {
+                if ($this->isMatch($this->regex['block_start'])) {
+                    $this->tokens[] = new Twig_Token(Twig_Token::BLOCK_START_TYPE, '', $this->line());
+                    if ($this->isMatch('\/') && $name = $this->isMatch($this->regex['name'])) {
+                        $this->tokens[] = new Twig_Token(Twig_Token::NAME_TYPE, 'end' . $name, $this->line());
+                    }
+                    $end = 'block_end';
+                } elseif ($this->isMatch($this->regex['var_start'])) {
+                    $this->tokens[] = new Twig_Token(Twig_Token::VAR_START_TYPE, '', $this->line());
+                    $end = 'var_end';
+                } else {
+                    throw new LogicException("This should be unreachable code!");
                 }
 
-                if (false !== $this->isMatch($this->regex['comment_start'])) {
-                    $this->skipAhead($this->regex['comment_end'], true);
-                } elseif (
-                    false !== ($start = $this->isMatch(array($this->regex['block_start'], $this->regex['var_start']), 0, false))
-                ) {
-                    if ($this->isMatch($this->regex['block_start'])) {
-                        $this->tokens[] = new Twig_Token(Twig_Token::BLOCK_START_TYPE, '', $this->line());
-                        if ($this->isMatch('\/') && $name = $this->isMatch($this->regex['name'])) {
-                            $this->tokens[] = new Twig_Token(Twig_Token::NAME_TYPE, 'end' . $name, $this->line());
-                        }
-                        $end = 'block_end';
-                    } elseif ($this->isMatch($this->regex['var_start'])) {
-                        $this->tokens[] = new Twig_Token(Twig_Token::VAR_START_TYPE, '', $this->line());
-                        $end = 'var_end';
-                    } else {
-                        throw new LogicException("This should be unreachable code!");
+                while (!$isErr) {
+                    $prePtr2 = $this->ptr;
+
+                    while ($token = $this->tokenizeExpression()) {
+                        $this->tokens[] = $token;
                     }
+                    $this->skipWhitespace();
 
-                    while (!$isErr) {
-                        $prePtr2 = $this->ptr;
-
-                        while ($token = $this->tokenizeExpression()) {
-                            $this->tokens[] = $token;
+                    if ($match = $this->isMatch($this->regex[$end])) {
+                        switch ($end) {
+                            case 'var_end':
+                                $this->tokens[] = new Twig_Token(Twig_Token::VAR_END_TYPE, $match, $this->line());
+                                break;
+                            case 'block_end':
+                                $this->tokens[] = new Twig_Token(Twig_Token::BLOCK_END_TYPE, $match, $this->line());
+                                break;
+                            default:
+                                throw new LogicException("This should be unreachable code!");
                         }
-                        $this->skipWhitespace();
-
-                        if ($match = $this->isMatch($this->regex[$end])) {
-                            switch ($end) {
-                                case 'var_end':
-                                    $this->tokens[] = new Twig_Token(Twig_Token::VAR_END_TYPE, $match, $this->line());
-                                    break;
-                                case 'block_end':
-                                    $this->tokens[] = new Twig_Token(Twig_Token::BLOCK_END_TYPE, $match, $this->line());
-                                    break;
-                                default:
-                                    throw new LogicException("This should be unreachable code!");
-                            }
-                            break;
-                        }
-                        if ($this->ptr == $prePtr2 || $isErr) {
-                            throw new UnexpectedValueException("expr Unexpected input at offset $this->ptr near " . substr($this->code, $this->ptr, 10));
-                        }
+                        break;
+                    }
+                    if ($this->ptr == $prePtr2 || $isErr) {
+                        throw new UnexpectedValueException("expr Unexpected input at offset $this->ptr near " . substr($this->code, $this->ptr, 10));
                     }
                 }
             }
@@ -157,7 +155,7 @@ class Sprig_Lexer implements Twig_LexerInterface
             $this->tokens[] = new Twig_Token(Twig_Token::TEXT_TYPE, $data, $this->line());
         }
         $this->tokens[] = new Twig_Token(Twig_Token::EOF_TYPE, '', $this->line());
-        return new Twig_TokenStream($this->tokens, $filename);
+        return new Twig_TokenStream($this->tokens, $filename, $this->isTrimBlocks());
     }
 
 
@@ -306,6 +304,14 @@ class Sprig_Lexer implements Twig_LexerInterface
     {
         if ($this->env) {
             return $this->env->isCompat($compat);
+        }
+        return true;
+    }
+
+
+    public function isTrimBlocks() {
+        if($this->env) {
+            return $this->env->getTrimBlocks();
         }
         return true;
     }
